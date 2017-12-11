@@ -15,7 +15,7 @@ from matplotlib.pyplot import *
 from calc_z import *
 
 
-def plot_vslice (file_path, variable, depth_min, depth_max, i_min, j_min, i_max, j_max, Vstretching, theta_s, theta_b, hc, N):
+def plot_vslice (file_path, variable,vmin,vmax, depth_min, depth_max, i_min, j_min, i_max, j_max, Vstretching, theta_s, theta_b, hc, N):
 
     #read grid and variable at timestep
     id = Dataset(file_path, 'r')
@@ -61,7 +61,7 @@ def plot_vslice (file_path, variable, depth_min, depth_max, i_min, j_min, i_max,
 
     #Plot
     fig=figure(figsize=(18,6))
-    pcolormesh(dist_2d,z_2d,data_2d)
+    pcolormesh(dist_2d,z_2d,data_2d,vmin=vmin,vmax=vmax)
     colorbar()
     title(name +" ("+ unit +") along line \n"+str([i_min, j_min])+" to "+str([i_max, j_max])+" (grid coords [i,j])", fontsize=24)
     xlabel('Distance (km)')

@@ -1,3 +1,4 @@
+# code adapted from Kaitlin Naughten, comments not updated
 
 from netCDF4 import Dataset
 from numpy import *
@@ -14,7 +15,7 @@ from scipy.spatial import KDTree
 # log_path = path to log file (if it exists, previously calculated values will
 #            be read from it; regardless, it will be overwritten with all
 #            calculated values following computation)
-def plot_dpt(file_path):
+def plot_timeseries(file_path):
     
     # Radius of the Earth in metres
     r = 6.371e6

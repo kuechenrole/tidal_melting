@@ -15,7 +15,7 @@ from matplotlib.pyplot import *
 from calc_z import *
 
 
-def plot_vslice (file_path, variable,vmin,vmax, depth_min, depth_max, i_min, j_min, i_max, j_max, Vstretching, theta_s, theta_b, hc, N):
+def plot_vslice (file_path, variable, tstep, depth_min, depth_max, i_min, j_min, i_max, j_max, Vstretching, theta_s, theta_b, hc, N, tstop=None, vmin=None, vmax=None):
 
     #read grid and variable at timestep
     id = Dataset(file_path, 'r')
@@ -23,7 +23,10 @@ def plot_vslice (file_path, variable,vmin,vmax, depth_min, depth_max, i_min, j_m
     zice = id.variables['zice'][:,:]
     mask = id.variables['mask_rho'][:,:]
     var = id.variables[variable]
-    data = mean(var[:,:,:,:],axis=0)
+    if tstop==None:
+        data = var[tstep]
+    else:
+        data = mean(var[:],axis=0)
     if hasattr(var, 'units'):
         unit=var.units
     else:
@@ -61,10 +64,13 @@ def plot_vslice (file_path, variable,vmin,vmax, depth_min, depth_max, i_min, j_m
 
     #Plot
     fig=figure(figsize=(18,6))
-    pcolormesh(dist_2d,z_2d,data_2d,vmin=vmin,vmax=vmax)
+    if (vmin!=None and vmax!=None):
+        pcolormesh(dist_2d,z_2d,data_2d,vmin=vmin,vmax=vmax)
+    else:
+        pcolormesh(dist_2d,z_2d,data_2d)
     colorbar()
-    title(name +" ("+ unit +") along line \n"+str([i_min, j_min])+" to "+str([i_max, j_max])+" (grid coords [i,j])", fontsize=24)
+    title(name +" ("+ unit +") along line \n"+str([i_min, j_min])+" to "+str([i_max, j_max])+" (grid coords [i,j])")
     xlabel('Distance (km)')
     ylabel('Depth (m)')
     ylim([depth_min,depth_max])
-    fig.show()
+    show()

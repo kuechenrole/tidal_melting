@@ -4,7 +4,7 @@ from netCDF4 import Dataset
 from numpy import *
 from matplotlib.pyplot import *
 from os.path import *
-from rotate_vector_roms import *
+from features.rotate_vector_roms import *
 from scipy.spatial import KDTree
 
 # Calculate and plot timeseries of the Drake Passage transport during a

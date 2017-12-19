@@ -2,7 +2,7 @@
 from netCDF4 import Dataset
 from numpy import *
 from matplotlib.pyplot import *
-from rotate_vector_roms import *
+from features.rotate_vector_roms import *
 import cmocean
 from ipywidgets import interact
 

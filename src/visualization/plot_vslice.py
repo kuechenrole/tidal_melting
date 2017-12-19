@@ -15,7 +15,7 @@ from matplotlib.pyplot import *
 from calc_z import *
 
 
-def plot_vslice (file_path, variable, tstep, depth_min, depth_max, i_min, j_min, i_max, j_max, Vstretching, theta_s, theta_b, hc, N, tstop=None, vmin=None, vmax=None):
+def plot_vslice (file_path, variable, tstep, depth_min, depth_max, i_min, j_min, i_max, j_max, Vstretching, theta_s, theta_b, hc, N, tstop=None, vmin=None, vmax=None,title_str=None):
 
     #read grid and variable at timestep
     id = Dataset(file_path, 'r')
@@ -26,7 +26,7 @@ def plot_vslice (file_path, variable, tstep, depth_min, depth_max, i_min, j_min,
     if tstop==None:
         data = var[tstep]
     else:
-        data = mean(var[:],axis=0)
+        data = mean(var[tstep:tstop],axis=0)
     if hasattr(var, 'units'):
         unit=var.units
     else:
@@ -69,7 +69,8 @@ def plot_vslice (file_path, variable, tstep, depth_min, depth_max, i_min, j_min,
     else:
         pcolormesh(dist_2d,z_2d,data_2d)
     colorbar()
-    title(name +" ("+ unit +") along line \n"+str([i_min, j_min])+" to "+str([i_max, j_max])+" (grid coords [i,j])")
+    title(title_str)
+    #title(name +" ("+ unit +") along line \n"+str([i_min, j_min])+" to "+str([i_max, j_max])+" (grid coords [i,j])")
     xlabel('Distance (km)')
     ylabel('Depth (m)')
     ylim([depth_min,depth_max])

@@ -3,56 +3,76 @@ import xarray as xr
 import numpy as np
 from .calc_z import calc_z
 
+def make_4D_mask(ds):
+
+    mask_4d = np.swapaxes(np.tile(ds.mask_rho,(ds.s_rho.size,1,1,1)),0,1)
+    mask_4d_da = xr.DataArray(mask_4d,dims=['ocean_time','s_rho','eta_rho','xi_rho'])
+    ds['mask_4d'] = mask_4d_da
+    ds.mask_4d.attrs = ds.mask_rho.attrs
+    
+    return ds
+
+
+
+def make_3D_XiEta(ds):
+    
+    xi_3d = np.tile(ds.xi_rho,(ds.s_rho.size,ds.eta_rho.size,1))
+    eta_3d = np.swapaxes(np.tile(ds.eta_rho,(ds.s_rho.size,ds.xi_rho.size,1)),1,2)
+    
+    xi_3d_da = xr.DataArray(xi_3d,dims=['s_rho','eta_rho','xi_rho'])
+    eta_3d_da = xr.DataArray(eta_3d,dims=['s_rho','eta_rho','xi_rho'])
+    
+    ds = ds.assign_coords(xi_3d=xi_3d_da)
+    ds = ds.assign_coords(eta_3d=eta_3d_da)
+    
+    ds['xi_3d'] = ds.xi_3d.where(ds.mask_rho == 1)
+    ds['eta_3d'] = ds.eta_3d.where(ds.mask_rho ==1)
+    
+    ds.xi_3d.attrs = ds.xi_rho.attrs
+    ds.eta_3d.attrs = ds.eta_rho.attrs
+    
+    return ds
+
+
+
+def make_4D_depth(ds):
+    
+    depths = np.empty((ds.ocean_time.size,ds.s_rho.size,ds.eta_rho.size,ds.xi_rho.size))
+    
+    for tstep in np.arange(ds.ocean_time.size):
+
+        h = ds.h[tstep].values
+        zice = ds.zice[tstep].values
+        theta_s = ds.theta_s[tstep].values
+        theta_b = ds.theta_b[tstep].values
+        hc = ds.hc[tstep].values
+        N = ds.s_rho.size
+        zeta = ds.zeta[tstep].values
+        Vstretching = ds.Vstretching[tstep].values
+        depths[tstep],s,C = calc_z(h,zice,theta_s,theta_b,hc,N,zeta,Vstretching)
+        
+    depth_da = xr.DataArray(depths,dims=['ocean_time','s_rho','eta_rho','xi_rho'])
+    ds = ds.assign_coords(depth=depth_da)
+    
+    ds['depth'] = ds.depth.where(ds.mask_rho == 1)
+    
+    return ds
+
+
+
 def make_roms_ds(file_paths):
+    '''Takes a roms history or averages file (wildcards are possible) and returns a Xarray dataset including 4D mask, 3D grid coordinates and 4D depths'''
     
     print('set up multifile dataset')
     ds_tmp = xr.open_mfdataset(file_paths)
     
-    
     print('set up 4D mask and add as variable to dataset')
-    mask_4d = np.swapaxes(np.tile(ds_tmp.mask_rho,(ds_tmp.s_rho.size,1,1,1)),0,1)
-    mask_4d_da = xr.DataArray(mask_4d,dims=['ocean_time','s_rho','eta_rho','xi_rho'])
-    ds_tmp['mask_4d'] = mask_4d_da
-    ds_tmp.mask_4d.attrs = ds_tmp.mask_rho.attrs
+    ds_tmp = make_4D_mask(ds_tmp)
     
+    print('set up 3D xi and eta arrays, fill with NaNs where invalid and apply as coordinates')
+    ds_tmp = make_3D_XiEta(ds_tmp)
     
-    print('set up 3D xi and eta arrays, mask them and apply as coordinates')
-    xi_3d = np.tile(ds_tmp.xi_rho,(ds_tmp.s_rho.size,ds_tmp.eta_rho.size,1))
-    eta_3d = np.swapaxes(np.tile(ds_tmp.eta_rho,(ds_tmp.s_rho.size,ds_tmp.xi_rho.size,1)),1,2)
-    
-    xi_3d_ma = np.ma.masked_where(mask_4d[0]==0,xi_3d)
-    eta_3d_ma = np.ma.masked_where(mask_4d[0]==0,eta_3d)
-    
-    xi_3d_da = xr.DataArray(xi_3d_ma,dims=['s_rho','eta_rho','xi_rho'])
-    eta_3d_da = xr.DataArray(eta_3d_ma,dims=['s_rho','eta_rho','xi_rho'])
-    
-    ds_tmp = ds_tmp.assign_coords(xi_3d=xi_3d_da)
-    ds_tmp = ds_tmp.assign_coords(eta_3d=eta_3d_da)
-    
-    ds_tmp.xi_3d.attrs = ds_tmp.xi_rho.attrs
-    ds_tmp.eta_3d.attrs = ds_tmp.eta_rho.attrs
-    
-    
-    print('calculate 4D depth array')
-    depths = np.empty((ds_tmp.ocean_time.size,ds_tmp.s_rho.size,ds_tmp.eta_rho.size,ds_tmp.xi_rho.size))
-    
-    for tstep in np.arange(ds_tmp.ocean_time.size):
-
-        h = ds_tmp.h[tstep].values
-        zice = ds_tmp.zice[tstep].values
-        theta_s = ds_tmp.theta_s[tstep].values
-        theta_b = ds_tmp.theta_b[tstep].values
-        hc = ds_tmp.hc[tstep].values
-        N = ds_tmp.s_rho.size
-        zeta = ds_tmp.zeta[tstep].values
-        Vstretching = ds_tmp.Vstretching[tstep].values
-        depths[tstep],s,C = calc_z(h,zice,theta_s,theta_b,hc,N,zeta,Vstretching)
-        
-    print('apply mask to depths')
-    depths_ma = np.ma.masked_where(ds_tmp.mask_4d==0,depths)
-        
-    print('assign depth as new coordinate to the data set')
-    depth_da = xr.DataArray(depths_ma,dims=['ocean_time','s_rho','eta_rho','xi_rho'])
-    ds = ds_tmp.assign_coords(depth=depth_da)
+    print('calculate 4D depth array, fill with NaNs where invalid and apply as coordinate')
+    ds = make_4D_depth(ds_tmp)
     
     return ds

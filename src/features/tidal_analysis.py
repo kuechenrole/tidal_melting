@@ -13,17 +13,20 @@ def read_atg(atg_path,site_id):
     tide_data['name'] = tide_data['name'].strip()
     return tide_data
 
-def extract_zeta(file_path,target_lat,target_lon):
+def extract_zeta(file_path,grid_path,target_lat,target_lon):
 
     print('extract zeta ...')
     
     #read roms values and grid data
     data = Dataset(file_path,'r')
     zeta_rho = data.variables['zeta'][:,:,:]
-    lon_rho = data.variables['lon_rho'][:,:]
-    lat_rho = data.variables['lat_rho'][:,:]
-    mask_rho = data.variables['mask_rho'][:,:]
     data.close()
+
+    grid = Dataset(grid_path,'r')
+    lon_rho = grid.variables['lon_rho'][:,:]
+    lat_rho = grid.variables['lat_rho'][:,:]
+    mask_rho = grid.variables['mask_rho'][:,:]
+    grid.close()
 
     lat_s = lat_rho[mask_rho==1]
     lon_s = lon_rho[mask_rho==1]
@@ -43,4 +46,4 @@ def extract_zeta(file_path,target_lat,target_lon):
     #zeta_s_flat = zeta_s.reshape((size(zeta_s,0),size(lon_s)))
     zeta_t = zeta_s[:,ind]
 
-    return zeta_t
+    return (zeta_t,ind)

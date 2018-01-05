@@ -1,10 +1,10 @@
-waom10_grd.nc: src/preprocessing/make_grid.m data/external/bedmap2/bedmap2_bin/ data/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc
-	matlab -nojvm src/preprocessing/make_grid.m
+data/preprocessing/grid/interim/waom10_grd.nc: src/preprocessing/grid/make_grid.m data/external/bedmap2/bedmap2_bin/bedmap2_bed.hdr data/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc
+	matlab -nojvm src/preprocessing/grid/make_grid.m
 
-bedmap2_bin:
+data/external/bedmap2/bedmap2_bin/bedmap2_bed.hdr:
 	curl https://secure.antarctica.ac.uk/data/bedmap2/bedmap2_bin.zip > data/external/bedmap2/
-	unzip bedmap2_bin.zip
+	unzip data/external/bedmap2/bedmap2_bin.zip
 
-RTopo-2.0.1_30sec_bedrock_topography_S30.nc:
-	curl https://doi.org/10.1594/PANGAEA.856844 > RTopo-2.0.1_30sec_bedrock_topography_S30.nc
+data/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc:
+	curl https://doi.org/10.1594/PANGAEA.856844 > data/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc
 

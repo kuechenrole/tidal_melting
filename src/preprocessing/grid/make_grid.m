@@ -1,11 +1,13 @@
 PlotFigs = 1;
-addpath(genpath('/home/ubuntu/iceOceanVolume/matlab_tools'))
-addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/grid_generator/'))
-addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/Preprocessing_tools/'))
-addpath(genpath('/home/ubuntu/iceOceanVolume/ant_mf/bedmap2'))
+%addpath(genpath('/home/ubuntu/iceOceanVolume/matlab_tools'))
+%addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/grid_generator/'))
+%addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/Preprocessing_tools/'))
+%addpath(genpath('/home/ubuntu/iceOceanVolume/ant_mf/bedmap2'))
+%addpath(genpath('/home/ubuntu/iceOceanVolume/Code/roms_matlab'))
+addpath(genpath('./matlab_tools/'))
+addpath(genpath('../../../data/external/bedmap2/'))
 
 
-addpath(genpath('/home/ubuntu/iceOceanVolume/Code/roms_matlab'))
 load hot_cold_white
 %% Model domain at mesh resolution (mr) in km:
 mr = 10;
@@ -524,8 +526,9 @@ nc_write(GrdName,'pm', pm');
 nc_write(GrdName,'pn', pn');
 nc_write(GrdName,'dmde', dmde');
 nc_write(GrdName,'dndx', dndx');
-%ModelHOME = ['/home/ubuntu/IceOceanVolume/Code/ROMSIceShelf_devel/Data/waom' num2str(mr) '/']
-%eval(['!mv ' GrdName ' ' ModelHOME '.']);
+
+ModelHOME = ['../../../data/preprocessing/grid/waom' num2str(mr) '/interim/']
+eval(['!mv ' GrdName ' ' ModelHOME '.']);
 
 
 

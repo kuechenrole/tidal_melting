@@ -5,8 +5,7 @@ PlotFigs = 1;
 %addpath(genpath('/home/ubuntu/iceOceanVolume/ant_mf/bedmap2'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/Code/roms_matlab'))
 addpath(genpath('./matlab_tools/'))
-addpath(genpath('../../../data/external/bedmap2/'))
-
+addpath(genpath('../../../data/preprocessing/external/bedmap2'))
 
 load hot_cold_white
 %% Model domain at mesh resolution (mr) in km:
@@ -24,7 +23,7 @@ Cwm = ones(size(Cx));
 %establish longitude and latitude from polar stereo projection:
 Cla = nan(size(Cx));
 Clo = nan(size(Cx));
-for i = 1:size(Cx,1);
+for i = 1:size(Cx,1);ERA_Interim_1992_2011.2daily.uwinds.nc
     [t1, t2] = inverse_polar_stereo(Cx(i,:),Cy(i,:),0,0,1,-71);
     Cla(i,:) = t1';
     Clo(i,:) = t2';
@@ -144,7 +143,7 @@ s.clipping_depths(2) = 6000;
 if PlotFigs == 1;
 h1 = figure('visible','off'),
 figure,
-flat_pcolor(s.zb(jj)),
+flat_pcolor(s.zb),
 %flat_pcolor(x(1:res:end,1:res:end),y(1:res:end,1:res:end),elev_bed(1:res:end,1:res:end));shading flat,
 colormap(hot_cold_white),
 %hold on,
@@ -156,13 +155,13 @@ colorbar();
 axis square
 %caxis([-1500 1500])
 %saveas(h1,'grd_20170809.png','png');
-!cp -p grd_20150513.png ~/public_html/WholeAntarcticModel/.
+%!cp -p grd_20150513.png ~/public_html/WholeAntarcticModel/.
 end
 
 
 %% Fill up far north regions, with RTOPO (Smith and Sandwell bathymetry)
 % Use rtopo bathymetry south of 30S (subset of global 30s bedrock variable)
-RTOPO = '/home/ubuntu/iceOceanVolume/ant_mf/RTopo105/RTopoFull/RTopo-2.0.1_30sec_bedrock_topography_S30.nc';
+RTOPO = '../../../data/preprocessing/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc';
 % load lon lat and bathy from RTopo and generate lat-lon mesh for interpolation
 lon_rtopo = ncread(RTOPO,'lon');
 lat_rtopo = ncread(RTOPO,'lat');
@@ -206,7 +205,7 @@ contour(s.y,y_vals,'ShowText','on','LineColor','k')
 %plot(Cx(:,:),Cy(:,:),'k');
 %hold on, plot(Cx(:,:)',Cy(:,:)','k'););
 %caxis([-1500,1500]);20170809
-saveas(h2,'waom10_grd_domains.png','png');
+%saveas(h2,'waom10_grd_domains.png','png');
 axis square,
 hold off;
 end
@@ -227,11 +226,11 @@ y_l = [-3700,3600];
 %subset the same way Ben did befor with find lower corner and subset up to
 %upper corner!
 
-i = find(s.x(1,:) == x_orig(1))
-ii = find(s.x(1,:) == x_orig(2))
+i = find(s.x(1,:) == x_l(1))
+ii = find(s.x(1,:) == x_l(2))
 
-j = find(s.y(:,1) == y_orig(1))
-jj = find(s.y(:,1) == y_orig(2))
+j = find(s.y(:,1) == y_l(1))
+jj = find(s.y(:,1) == y_l(2))
 
 s.x = s.x(j:jj,i:ii);
 s.y = s.y(j:jj,i:ii);
@@ -492,7 +491,7 @@ bb(ii) = -dd(ii) + min_depth0;
 %% Final write
 %htest = ones(size(bathymetry(1:end-1,2:end)')).*900;
 
-GrdName = ['TESTwaom' num2str(mr) '_MinDepth' num2str(s.clipping_depths(1)) 'm_rx1' num2str(rx1in) '_grd.nc']
+GrdName = ['waom' num2str(mr) '_MinDepth' num2str(s.clipping_depths(1)) 'm_rx1' num2str(rx1in) '_grd.nc']
 c_grid(LP,MP,GrdName);
 nc_write(GrdName,'xl', xl);
 nc_write(GrdName,'el', el);
@@ -527,7 +526,7 @@ nc_write(GrdName,'pn', pn');
 nc_write(GrdName,'dmde', dmde');
 nc_write(GrdName,'dndx', dndx');
 
-ModelHOME = ['../../../data/preprocessing/grid/waom' num2str(mr) '/interim/']
+ModelHOME = ['../../../data/preprocessing/interim/']
 eval(['!mv ' GrdName ' ' ModelHOME '.']);
 
 

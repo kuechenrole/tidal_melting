@@ -1,4 +1,4 @@
-PlotFigs = 1;
+PlotFigs = 0;
 %addpath(genpath('/home/ubuntu/iceOceanVolume/matlab_tools'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/grid_generator/'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/Preprocessing_tools/'))
@@ -9,11 +9,11 @@ addpath(genpath('../../../data/preprocessing/external/bedmap2'))
 
 load hot_cold_white
 %% Model domain at mesh resolution (mr) in km:
-mr = 10;
+mr = 5;
 
 %establish domain size of roms mesh (South pole is at km 0,0):
 [Cx Cy] = meshgrid([-4500:mr:4500],[-4500:mr:4500]);
-% est up arrays for grid ice mask (Cim), bed height (Cb), ice thickness (Ci),
+% set up arrays for grid ice mask (Cim), bed height (Cb), ice thickness (Ci),
 % water/land mask (Cwm), latitude (Cla), longitude (Clo) 
 Cim = zeros(size(Cx));
 Cb  = nan(size(Cx));
@@ -23,7 +23,7 @@ Cwm = ones(size(Cx));
 %establish longitude and latitude from polar stereo projection:
 Cla = nan(size(Cx));
 Clo = nan(size(Cx));
-for i = 1:size(Cx,1);ERA_Interim_1992_2011.2daily.uwinds.nc
+for i = 1:size(Cx,1);
     [t1, t2] = inverse_polar_stereo(Cx(i,:),Cy(i,:),0,0,1,-71);
     Cla(i,:) = t1';
     Clo(i,:) = t2';
@@ -98,7 +98,7 @@ bm_wm(find(double(bm_im) == 1)) = 1;
 % first, find indices (ii,jj), where left bottom corner of grid domain fits into bigger bedmap domain 
 % this is done by comparing the distance-from-pole arrays of bedmap and grid
 ii = find(bm_x(1,4) - Cx(1,:) == 0)
-jj = find(bm_y(4,1) - Cy(:,1) == 0)
+jj = find(bm_y(4,1) - Cy(:,1) == 0);
 % merge bedmap variables (small grid) in predefined roms grid (large grid):
 Cim(jj:jj+size(bm_x(4:mr:end,4:mr:end),1)-1,ii:ii+size(bm_x(4:mr:end,4:mr:end),2)-1) = bm_im(4:mr:end,4:mr:end);
 %Cb = -elev_bed(jj:mr:jj+(size(Cx,1)*mr)-1,ii:mr:ii+(size(Cy,2)*mr)-1);
@@ -161,7 +161,7 @@ end
 
 %% Fill up far north regions, with RTOPO (Smith and Sandwell bathymetry)
 % Use rtopo bathymetry south of 30S (subset of global 30s bedrock variable)
-RTOPO = '../../../data/preprocessing/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc';
+RTOPO = '$PROJ_DIR/data/preprocessing/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc';
 % load lon lat and bathy from RTopo and generate lat-lon mesh for interpolation
 lon_rtopo = ncread(RTOPO,'lon');
 lat_rtopo = ncread(RTOPO,'lat');
@@ -196,7 +196,7 @@ flat_pcolor(s.zb)
 colormap(hot_cold_white)
 colorbar()
 hold on
-contour(s.zb,[1000,1000],'LineWidth',2,'LineColor','k')
+contour(s.lat,[-60.05 -60.05],'LineWidth',0.1,'LineColor','k')
 x_vals=[-4300:500:-3300,-3000,3300:500:4300];
 y_vals = [-3700:500:-2700,2600:500:3600];
 %vals = [-3600:mr*10:3600];
@@ -305,8 +305,10 @@ wct = bt + dt;
 
 rx1in = 0.3
 [wctout]=smooth_bath(wct,CwmFALSE,4,rx1in,150);
+%wctout = wct;
 disp("smooth wct ok");
 [bathymetry]=smooth_bath(bt,CwmFALSE,4,rx1in,150);
+%bathymetry = bt;
 disp("smooth bathy ok");
 
 ice_draft = wctout - bathymetry;
@@ -492,6 +494,8 @@ bb(ii) = -dd(ii) + min_depth0;
 %htest = ones(size(bathymetry(1:end-1,2:end)')).*900;
 
 GrdName = ['waom' num2str(mr) '_MinDepth' num2str(s.clipping_depths(1)) 'm_rx1' num2str(rx1in) '_grd.nc']
+%GrdName = ['waom' num2str(mr) '_MinDepth' num2str(s.clipping_depths(1)) '_grd.nc']
+
 c_grid(LP,MP,GrdName);
 nc_write(GrdName,'xl', xl);
 nc_write(GrdName,'el', el);

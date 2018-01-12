@@ -1,2 +1,5 @@
+data/preprocessing/processed/waom10_grd.nc: data/preprocessing/interim/waom10_MinDepth20m_rx10.3_grd.nc notebooks/0.5-kuechenrole-grid_tuning.ipynb
+
+
 data/preprocessing/interim/waom10_MinDepth20m_rx10.3_grd.nc: data/preprocessing/external/bedmap2/bedmap2.mat data/preprocessing/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc src/preprocessing/grid/make_grid.m
 	matlab -nojvm -nodisplay -r 'try; run src/preprocessing/grid/make_grid.m; catch; end; quit'

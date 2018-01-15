@@ -1,4 +1,4 @@
-PlotFigs = 0;
+PlotFigs = 1;
 %addpath(genpath('/home/ubuntu/iceOceanVolume/matlab_tools'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/grid_generator/'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/Preprocessing_tools/'))

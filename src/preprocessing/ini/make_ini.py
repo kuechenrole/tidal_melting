@@ -8,7 +8,12 @@ import sys
 from netCDF4 import Dataset
 from numpy import *
 from scipy.interpolate import RegularGridInterpolator
+import sys
+
+src_dir = os.path.join(os.environ['PROJ_DIR'],'src')
+sys.path.append(src_dir)
 from features.calc_z import *
+
 
 # Main routine
 def roms_ini_ecco(grid_file, theta_file, salt_file, output_file, Tcline, theta_s, theta_b, hc, N, nbdry_ecco,tempbounds,saltbounds,vostock):
@@ -334,14 +339,14 @@ def interp_ecco2roms (A, lon_ecco, lat_ecco, depth_ecco, lon_roms_3d, lat_roms_3
 # set user parameter and call main routine
 if __name__ == "__main__":
 
-    grd_file = os.path.join(os.pardir,'data','external','grids','waom10_grd_large.nc')
-    out_file = os.path.join(os.pardir,'data','external','ini_files','waom10_ini_large.nc')
+    grd_file = os.path.join(os.environ['PROJ_DIR'],'data','preprocessing','processed','waom10_grd.nc')
+    out_file = os.path.join(os.environ['PROJ_DIR'],'data','preprocessing','processed','waom10_ini.nc')
 
     print('making ini file for grid file: ' + grd_file)
 
     # Path to ECCO2 files for temperature and salinity 1th January 1995
-    salt_file = os.path.join(os.pardir,'data','external','ecco2','SALT.1440x720x50.19950101.nc')
-    theta_file = os.path.join(os.pardir,'data','external','ecco2','THETA.1440x720x50.19950101.nc')
+    salt_file = os.path.join(os.environ['PROJ_DIR'],'data','preprocessing','external','ecco2','SALT.nc','SALT.1440x720x50.20070101.nc')
+    theta_file = os.path.join(os.environ['PROJ_DIR'],'data','preprocessing','external','ecco2','THETA.nc','THETA.1440x720x50.20070101.nc')
 
     # Grid parameters; check grid_file and *.in file to make sure these are correct
     Tcline = 50

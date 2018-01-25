@@ -7,18 +7,18 @@
 % 2017-Jun-21:   adapted to work on 360° whole antarctic domain
 
 %addpath(genpath('/ds/projects/iomp/matlab_scripts'))
-proj_dir = getenv('proj_dir');
-interim_dir = [proj_dir,'/data/preprocessing/interim'];
-processed_dir = [proj_dir,'/data/preprocessing/processed'];
-external_dir = [proj_dir,'/data/preprocessing/external'];
+proj_dir = getenv('projdir');
+interim_dir = getenv('intdir');
+processed_dir = getenv('prodir');
+external_dir = getenv('extdir');
 
-grdname = [processed_dir,'/waom10_grd.nc']
+grdname = [processed_dir,'/waom5_grd.nc']
 %bryname = '/ds/projects/iomp/aisom/ana/dgwyther/grid/aisom002/aisom002_bry.nc'; %output filename.
-bryname = [processed_dir,'/waom10_bry.nc']
+bryname = [processed_dir,'/waom5_bry.nc']
 MinYear = 2007;
 MaxYear = 2007;
 ECCObounds = [1 1438 28 200];%as [xmin xmax ymin ymax]; 
-RunName = 'waom10'
+RunName = 'waom5'
 
 Vtransform = 2;
 Vstretching = 4;
@@ -81,7 +81,7 @@ elseif DataProduct == 3
         eval(['do_load_ecco2_',force_id{ii},'_cube84'])
     end
 elseif DataProduct == 4
-    for ii = 1:4
+    for ii = 1:5
         disp(['loading ' force_id{ii} ' data'])
         eval(['do_load_ecco2_',force_id{ii},'_cube92'])
     end

@@ -4,16 +4,16 @@
 
 %addpath('/ds/projects/iomp/matlab_scripts')
 %addpath(genpath('/ds/projects/iomp/matlab_scripts/netcdflib')) %script to read ncep data
-addpath('../matlab_tools')
+addpath(genpath('../matlab_tools'))
  
-proj_dir = getenv('proj_dir');
+proj_dir = getenv('projdir');
 interim_dir = [proj_dir,'/data/preprocessing/interim'];
 processed_dir = [proj_dir,'/data/preprocessing/processed'];
 external_dir = [proj_dir,'/data/preprocessing/external'];
 
-grdname = [processed_dir,'waom10_grd.nc']; 
-frcname = [processed_dir,'waom10_sbc.nc'];
-RunName = 'waom10';
+grdname = [processed_dir,'/waom10_grd.nc']
+frcname = [processed_dir,'/waom10_sbc.nc']
+RunName = 'waom10'
 MinYear = 2007;
 MaxYear = 2007;
 windbounds = [1 240 85 121]; %lonmin lonmax latmin latmax

@@ -26,7 +26,7 @@ end
 
 for TimeInd = 1:12*(MaxYear-MinYear+1)
 
-salt(TimeInd,:,:,:) = permute(ncread([external_dir,'ecco2/SALT.nc/SALT.1440x720x50.' num2str(monstr(TimeInd)) '.nc'],'SALT',[Xloc(1) Yloc(1) 1 1],[Xloc(2)-Xloc(1)+1 Yloc(2)-Yloc(1)+1 Inf Inf]),[3 1 2]);
+salt(TimeInd,:,:,:) = permute(ncread([external_dir,'/ecco2/SALT.nc/SALT.1440x720x50.' num2str(monstr(TimeInd)) '.nc'],'SALT',[Xloc(1) Yloc(1) 1 1],[Xloc(2)-Xloc(1)+1 Yloc(2)-Yloc(1)+1 Inf Inf]),[3 1 2]);
 disp([num2str(TimeInd) ' of ' num2str(12*(MaxYear-MinYear+1)) ' month done.'])
 end
 

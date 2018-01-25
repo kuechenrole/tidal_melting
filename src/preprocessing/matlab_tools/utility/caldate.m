@@ -23,7 +23,7 @@ function [Date]=caldate(Julian);
 %                  Date.sec   =>  seconds
 %
 
-% svn $Id: caldate.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %===========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %

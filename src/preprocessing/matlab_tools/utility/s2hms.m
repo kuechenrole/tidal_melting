@@ -19,7 +19,7 @@ function [hour,min,sec]=s2hms(secs);
 %    s           Seconds (rounded to nearest integer)
 %
 
-% svn $Id: s2hms.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %===========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %

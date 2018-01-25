@@ -38,7 +38,7 @@ function rho = roms_eos(T, S, Z)
 %    and Oceanic Techn., vol. 12, pp. 381-389.
 %
 
-% svn $Id: roms_eos.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %=========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %

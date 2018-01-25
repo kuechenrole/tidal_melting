@@ -1,11 +1,11 @@
 function [z]=set_depth(Vtransform, Vstretching, ...
                        theta_s, theta_b, hc, N, ...
-                       igrid, h, zice, zeta, report)
+                       igrid, h, zeta, report)
 %
 % SET_DEPTH:  Compute ROMS grid depth from vertical stretched variables
 %
 % [z]=set_depth(Vtransform, Vstretching, theta_s, theta_b, hc, N, ...
-%               igrid, h, zice, zeta)
+%               igrid, h, zeta)
 %
 % Given a batymetry (h), free-surface (zeta) and terrain-following
 % parameters, this function computes the 3D depths for the requested
@@ -58,9 +58,6 @@ function [z]=set_depth(Vtransform, Vstretching, ...
 %    h             Bottom depth, 2D array at RHO-points (m, positive),
 %                    h(1:Lp+1,1:Mp+1)
 %
-%    zice          zice, 2D array at RHO-points (m, positive),
-%                    h(1:Lp+1,1:Mp+1)
-%
 %    zeta          Free-surface, 2D array at RHO-points (m), OPTIONAL,
 %                    zeta(1:Lp+1,1:Mp+1)
 %
@@ -73,7 +70,7 @@ function [z]=set_depth(Vtransform, Vstretching, ...
 %    z             Depths (m, negative), 3D array
 %
 
-% svn $Id: set_depth.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %=========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %
@@ -123,11 +120,11 @@ if (hc > min(min(h)) && Vtransform == 1),
   return
 end
 
-if (nargin < 10),
+if (nargin < 9),
   zeta=zeros(size(h));
 end
 
-if (nargin < 11),
+if (nargin < 10),
   report=1;
 end
 
@@ -184,26 +181,21 @@ end
 
 switch ( igrid ),
   case 1
-    hr=h+zice;
-    zetar=zeta+zice;
+    hr=h;
+    zetar=zeta;
   case 2
-    h = h+zice;
     hp=0.25.*(h(1:L,1:M)+h(2:Lp,1:M)+h(1:L,2:Mp)+h(2:Lp,2:Mp));
     zetap=0.25.*(zeta(1:L,1:M )+zeta(2:Lp,1:M )+                        ...
-                 zeta(1:L,2:Mp)+zeta(2:Lp,2:Mp))+...
-          0.25.*(zice(1:L,1:M )+zice(2:Lp,1:M )+...
-                 zice(1:L,2:Mp)+zice(2:Lp,2:Mp));
+                 zeta(1:L,2:Mp)+zeta(2:Lp,2:Mp));
   case 3
-    h = h;
     hu=0.5.*(h(1:L,1:Mp)+h(2:Lp,1:Mp));
-    zetau=0.5.*(zeta(1:L,1:Mp)+zeta(2:Lp,1:Mp))+0.5.*(zice(1:L,1:Mp)+zice(2:Lp,1:Mp));
+    zetau=0.5.*(zeta(1:L,1:Mp)+zeta(2:Lp,1:Mp));
   case 4
-    h = h+zice;
     hv=0.5.*(h(1:Lp,1:M)+h(1:Lp,2:Mp));
-    zetav=0.5.*(zeta(1:Lp,1:M)+zeta(1:Lp,2:Mp))+0.5.*(zice(1:Lp,1:M)+zice(1:Lp,2:Mp));
+    zetav=0.5.*(zeta(1:Lp,1:M)+zeta(1:Lp,2:Mp));
   case 5
-    hr=h+zice;
-    zetar=zeta+zice;
+    hr=h;
+    zetar=zeta;
 end,
 
 %--------------------------------------------------------------------------

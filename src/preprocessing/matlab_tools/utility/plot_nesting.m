@@ -62,7 +62,7 @@ function F=plot_nesting(Gnames, Hnames, Vname, Tindex, Level, varargin)
 %                    F(n).ht           figure title handler
 %                    F(n).hc           figure coastlines handler
   
-% svn $Id: plot_nesting.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %=========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %

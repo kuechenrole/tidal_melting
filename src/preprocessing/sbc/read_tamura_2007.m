@@ -30,7 +30,7 @@ for YearInd = 2007
     dms = DaysPerMonth(MonthInd);
 
     display(['Reading in GrADS data ' num2str(YearInd),' ',Month(MonthInd,:),' ...']);
-    eval(['fid = fopen(',external_dir,'/tamura/TSDM2hb_' num2str(YearInd),'_',Month(MonthInd,:),'.data'',''r'');']),
+    fid = fopen([external_dir,'/tamura/TSDM2hb_' num2str(YearInd),'_',Month(MonthInd,:),'.data']);
     
     tmp = reshape(fread(fid,721*721*dms*6,'float32=>double'),721,721,6,dms); 
     tmp = bsxfun(@times,tmp,landmaskNaN); % land mask
@@ -87,7 +87,7 @@ for j = 1:DayNumber;
 end
 
 
-disp('Saving gridded Heat/Salt fluxes for 1995')
+disp('Saving gridded Heat/Salt fluxes for 2007')
 save([RunName,'_air_sea_fluxes_daily.mat'],'shfluxGrid','ssfluxGrid','-v7.3')
 disp('Saved.')
 

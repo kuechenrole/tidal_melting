@@ -6,12 +6,12 @@ PlotFigs = 0;
 %addpath(genpath('/home/ubuntu/iceOceanVolume/Code/roms_matlab'))
 proj_dir = getenv('proj_dir');
 extern_dir = [proj_dir,'/data/preprocessing/external'];
-addpath(genpath('./matlab_tools/'))
+addpath(genpath('../matlab_tools/'))
 addpath(genpath('../../../data/preprocessing/external/bedmap2'))
 
 load hot_cold_white
 %% Model domain at mesh resolution (mr) in km:
-mr = 5;
+mr = 10
 
 %establish domain size of roms mesh (South pole is at km 0,0):
 [Cx Cy] = meshgrid([-4500:mr:4500],[-4500:mr:4500]);

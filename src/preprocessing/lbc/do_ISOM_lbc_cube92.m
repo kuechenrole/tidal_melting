@@ -1,11 +1,11 @@
 %% Load ECCO data
 disp('Load ECCO data')
 
-load([interim_dir,'/cube92_iaf_salt_',RunName,'.mat'])
-load([interim_dir,'/cube92_iaf_theta_',RunName,'.mat'])
-load([interim_dir,'/cube92_iaf_uvel_',RunName,'.mat'])
-load([interim_dir,'/cube92_iaf_vvel_',RunName,'.mat'])
-load([interim_dir,'/cube92_iaf_ssh_',RunName,'.mat'])
+load(['cube92_iaf_salt_',RunName,'.mat'])
+load(['cube92_iaf_theta_',RunName,'.mat'])
+load(['cube92_iaf_uvel_',RunName,'.mat'])
+load(['cube92_iaf_vvel_',RunName,'.mat'])
+load(['cube92_iaf_ssh_',RunName,'.mat'])
 
 disp('done')
 
@@ -18,7 +18,7 @@ salt(salt < 0) = NaN;
 % Find nearest indexes for locations:
 %disp('Find nearest indexes for locations')
 %ncload /u/crcdata/ECCO2/cube84/THETA/THETA.1440x720x50.001.nc LATITUDE_T LONGITUDE_T DEPTH_T
-ecco_grd =  [external_dir,'/ecco2/VVEL.nc/VVEL.1440x720x50.20070101.nc'];
+ecco_grd =  [external_dir,'/ecco2/THETA.nc/THETA.1440x720x50.20070101.nc'];
 LATITUDE_T = ncread(ecco_grd,'LATITUDE_T')';
 LONGITUDE_T = ncread(ecco_grd,'LONGITUDE_T')';
 DEPTH_T = ncread(ecco_grd,'DEPTH_T')';
@@ -162,7 +162,7 @@ isfc.prs =  nan(12*(MaxYear-MinYear+1),size(LonInterpSurface,1),size(LonInterpSu
 %%
 InterpFcn = 'linear';
 %adpath('/ds/projects/iomp/matlab_scripts')
-
+disp('Interpolate to roms boundary')
 for i = 1:12*(MaxYear-MinYear+1); 
 
 In1 = squeeze(theta(i,:,:,:)); 

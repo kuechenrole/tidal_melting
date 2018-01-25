@@ -36,6 +36,7 @@ function do_ISOM_lbc_nc_cube92(bryname,grdname,title,obc,...
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 load('isfc_cube92.mat')
+
 InterpSurface = isfc;
 NST = 10;
 %obc=[1 1 1 1];
@@ -130,6 +131,7 @@ uv_east = (u_east_latlon+1i*v_east_latlon).*exp(1i*-angle_east);
 u_east = real(uv_east);
 v_east_rho = imag(uv_east);
 v_east = 0.5.*(v_east_rho(1:end-1,:,:)+v_east_rho(2:end,:,:));
+
 %ubar_east =  zeros(Mp,length(time));
 %vbar_east =  zeros(M,length(time));
 [z,s_r,Cs_r] = scoord(h', zice', x', y', Vtransform, Vstretching, theta_s, theta_b, hc, N, kgrid, 1, Lp, plt);

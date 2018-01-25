@@ -30,7 +30,7 @@ function [Istr,Iend,Jstr,Jend] = sample_grid(XD,YD,XR,YR,varargin)
 %    Jend          Donor grid ending   J-index for sampling
 %
 
-% svn $Id: sample_grid.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %=========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %

@@ -17,7 +17,7 @@ function [r]=rfactor(h,rmask);
 %    r           R-factor (2D array)
 %
 
-% svn $Id: rfactor.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %===========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %

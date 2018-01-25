@@ -29,7 +29,7 @@ function [z]=depths(fname, gname, igrid, idims, tindex);
 %    z           Depths (3D array; meters, negative)
 %
 
-% svn $Id: depths.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %=========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %

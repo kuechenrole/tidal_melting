@@ -18,7 +18,7 @@ function [str]=greg2str(gtime)
 %    str         Gregorian date string.
 %                  greg2str([1968 5 23 0 0 0]) = '1968/05/23 00:00'
 
-% svn $Id: greg2str.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %===========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %

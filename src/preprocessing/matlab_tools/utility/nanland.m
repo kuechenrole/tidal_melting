@@ -36,7 +36,7 @@ function Fout = nanland(Finp, Ginp)
 %    pcolor(G.lon_rho, G.lat_rho, nanland(salt(:,:,20),G.mask_rho))
 %
 
-% svn $Id: nanland.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %=========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                            %
 %    Licensed under a MIT/X style license                                 %

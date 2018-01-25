@@ -3,8 +3,9 @@ title =([RunName,' surface heat/salt fluxes and wind stress']); % Make title fro
 
 disp('load air sea flux file (big file so load it once and subset later)')
 load([RunName,'_air_sea_fluxes_daily.mat'])
-load('ustress_grid_model.mat')
-load('vstress_grid_model.mat')
+disp('load uvstress')
+load([RunName,'_ustress_daily.mat'])
+load([RunName,'_vstress_daily.mat'])
 
 %% 
 
@@ -112,8 +113,8 @@ netcdf.putVar(id, swf_time_id, swft);
     disp('write salt and heat flux variables')
 shf = shfluxGrid; clear shfluxGrid
 swf = ssfluxGrid; clear ssfluxGrid
-su  = u_stress_All; clear u_stress_All
-sv  = v_stress_All; clear v_stress_All
+su  = u_stress; clear u_stress
+sv  = v_stress; clear v_stress
 
     disp('inpainting nans in wind fields...')
 %addpath('/ds/projects/iomp/matlab_scripts')

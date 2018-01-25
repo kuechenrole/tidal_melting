@@ -29,7 +29,7 @@ function [dist,bearing]=gcircle(lon1,lat1,lon2,lat2,BEARING);
 % Adapted from routine written by Pat J. Haley (Harvard University).
 %
 
-% svn $Id: gcircle.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %===========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %

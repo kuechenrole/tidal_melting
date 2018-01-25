@@ -24,7 +24,7 @@ function [Istr,Iend,Jstr,Jend]=tile(Lm,Mm,NtileX,NtileE,tile,varargin);
 %    Jend        Ending   tile J-direction index
 %
 
-% svn $Id: tile.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 %===========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %

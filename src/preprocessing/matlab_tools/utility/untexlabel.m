@@ -25,7 +25,7 @@ function newstr = untexlabel(str)
 % Adapted from Giuseppe Ridino 08-Jul-2004 script.
 %
 
-% svn $Id: untexlabel.m 754 2015-01-07 23:23:40Z arango $
+% svn $Id$
 
 % Initialize output
 

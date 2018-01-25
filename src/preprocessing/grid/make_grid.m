@@ -1,3 +1,4 @@
+smooth = 0;
 PlotFigs = 0;
 %addpath(genpath('/home/ubuntu/iceOceanVolume/matlab_tools'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/grid_generator/'))
@@ -311,12 +312,18 @@ dt(wct == 0) = -bt(wct == 0) + min_depth0;
 wct = bt + dt;
 
 rx1in = 0.3
-[wctout]=smooth_bath(wct,CwmFALSE,4,rx1in,150);
-%wctout = wct;
-disp("smooth wct ok");
-[bathymetry]=smooth_bath(bt,CwmFALSE,4,rx1in,150);
-%bathymetry = bt;
-disp("smooth bathy ok");
+
+if smooth == 1
+    disp('smoothing activated');
+    [wctout]=smooth_bath(wct,CwmFALSE,4,rx1in,150);
+    disp("smooth wct ok");
+    [bathymetry]=smooth_bath(bt,CwmFALSE,4,rx1in,150);
+    disp("smooth bathy ok");
+else
+    disp('smoothing deactivated');
+    wctout = wct;
+    bathymetry = bt;
+end
 
 ice_draft = wctout - bathymetry;
 wct = wctout;
@@ -453,9 +460,9 @@ dd = ice_draft(1:end-1,2:end);
 % Final check
 ii = find((bb+dd).*rmask < min_depth & (bb+dd).*rmask > 0 );
 bb(ii) = -dd(ii) + min_depth;
-
-[bb]=smooth_bath(bb,ones(size(bb)),4,rx1in,50);
-
+if smooth == 1
+    [bb]=smooth_bath(bb,ones(size(bb)),4,rx1in,50);
+end
 ii = find((bb+dd).*rmask < min_depth & (bb+dd).*rmask > 0 );
 bb(ii) = -dd(ii) + min_depth;
 %dd(ii) = -bb(ii) + min_depth;

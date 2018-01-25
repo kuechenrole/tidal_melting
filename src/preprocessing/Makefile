@@ -1,30 +1,40 @@
+######## preprocessing steps to generate grids, boundary conditions and forcing files for ROMS whole antarctic ocean applications #############
+
+####### summaries ti run e.g. make 10km and get all the necescary files #############
 10km: $(intdir)/waom10_grd.nc $(prodir)/waom10_ini.nc $(prodir)/waom10_bry.nc $(prodir)/waom10_sbc.nc $(prodir)/waom10_nudge.nc $(prodir)/waom10_tds.nc
 
 5km: $(intdir)/waom5_grd.nc $(prodir)/waom5_ini.nc $(prodir)/waom5_bry.nc $(prodir)/waom5_sbc.nc $(prodir)/waom5_nudge.nc $(prodir)/waom5_tds.nc
 
 grids: $(intdir)/waom10_grd.nc $(intdir)/waom5_grd.nc
-     # see notebooks/reports/0.5-kuechenrole-grid_tuning.ipynb to generate final grids
 ini: $(prodir)/waom10_ini.nc $(prodir)/waom5_ini.nc
 bry: $(prodir)/waom10_bry.nc $(prodir)/waom5_bry.nc 
 sbc: $(prodir)/waom10_sbc.nc  $(prodir)/waom10_nudge.nc $(prodir)/waom5_sbc.nc $(prodir)/waom5_nudge.nc
 tds: $(prodir)/waom10_tds.nc $(prodir)/waom5_tds.nc
 
-# GRIDS
-$(intdir)/waom10_grd.nc: $(extdir)/bedmap/bedmap2.mat $(intdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc  grid/make_grid.m
-	sed -i 's/mr = ../mr = 10/g' grid/make_grid.m
-	matlab -nodesktop -nosplash -r 'run grid/make_grid; quit()'
+####### individual files ########
 
+#### GRIDS ######
+$(prodir)/waom5_grd.nc: $(intdir)/waom5_grd.nc grid/tune_waom5_grd.py
+	python grid/tune_waom5_grd.py
 
 $(intdir)/waom5_grd.nc: $(extdir)/bedmap/bedmap2.mat $(intdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc  grid/make_grid.m
 	sed -i 's/mr = ../mr =  5/g' grid/make_grid.m
 	matlab -nodesktop -nosplash -r 'run grid/make_grid; quit()'
+
+$(prodir)/waom10_grd.nc: $(intdir)/waom10_grd.nc grid/tune_waom10_grd.py
+	python grid/tune_waom10_grd.py
+
+$(intdir)/waom10_grd.nc: $(extdir)/bedmap/bedmap2.mat $(intdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc  grid/make_grid.m
+	sed -i 's/mr = ../mr = 10/g' grid/make_grid.m
+	matlab -nodesktop -nosplash -r 'run grid/make_grid; quit()'
+
 
 $(extdir)/bedmap/bedmap2.mat:
 $(intdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc:
 
 
 
-# Initial conditions
+##### Initial conditions ########
 $(prodir)/waom10_ini.nc: $(extdir)/SALT.nc/SALT.1440x720x50.20070101.nc $(extdir)/THETA.nc/THETA.1440x720x50.20070101.nc ini/make_ini.py
 	python ini/make_ini.py
 
@@ -38,7 +48,7 @@ $(prodir)/waom10_his_0006.nc:
 
 
 
-# open boundary conditions
+####### open boundary conditions #########
 $(prodir)/waom10_bry.nc: $(extdir)/ecco2/SALT.nc/SALT.1440x720x50.200701.nc $(extdir)/ecco2/THETA.nc/THETA.1440x720x50.200701.nc $(extdir)/ecco2/SSH.nc/SSH.1440x720.2007_monmean.nc lbc/make_lbc.m
 	sed -i 's/waom.*_grd.nc/waom10_grd.nc/g' lbc/make_lbc.m
 	sed -i 's/waom.*_bry.nc/waom10_bry.nc/g' lbc/make_lbc.m
@@ -57,8 +67,8 @@ $(extdir)/ecco2/SSH.nc/SSH.1440x720.2007_monmean.nc:
 
 
 
-# surface boundary conditions
-# sbc files
+######## surface boundary conditions ###########
+### sbc files ###
 $(prodir)/waom10_sbc.nc: $(prodir)/waom10_grd.nc $(extdir)/tamura/TSDM2hb_2007_apr.data $(extdir)/era_interim/ERA_Interim_1992_2011.2daily.uwinds.nc sbc/make_sbc.m sbc/do_ISOM_sbc_nc_daily_IAF.m sbc/ERA_interim_misom_grid_stress_annual.m
 	sed -i 's/waom.*_grd.nc/waom10_grd.nc/g' sbc/make_sbc.m
 	sed -i 's/waom.*_sbc.nc/waom10_sbc.nc/g' sbc/make_sbc.m
@@ -74,7 +84,7 @@ $(prodir)/waom5_sbc.nc: $(prodir)/waom5_grd.nc $(extdir)/tamura/TSDM2hb_2007_apr
 $(extdir)/tamura/TSDM2hb_2007_apr.data:
 $(extdir)/era_interim/ERA_Interim_1992_2011.2daily.uwinds.nc:
 
-# surface nudging files
+#### surface nudging files ###
 $(prodir)/waom10_nudge.nc: $(prodir)/waom10_grd.nc $(extdir)/sose/SALT_mnthlyBar.0000000100.data sbc/make_nudge.py
 	sed -i 's/waom.*_grd.nc/waom10_grd.nc/g' sbc/make_nudge.py
 	sed -i 's/waom.*_nudge.nc/waom10_nudge.nc/g' sbc/make_nudge.py
@@ -88,7 +98,7 @@ $(prodir)/waom5_nudge.nc: $(prodir)/waom5_grd.nc $(extdir)/sose/SALT_mnthlyBar.0
 $(extdir)/sose/SALT_mnthlyBar.0000000100.data:
 
 
-# tidal forcing
+######## tidal forcing ###########
 $(prodir)/waom5_tds.nc: $(intdir)/waom5_tds.nc
 	ncrename -O -v tide_Ephase,tide_Pphase $^ $@ 
 	ncrename -O -v tide_Eamp,tide_Pamp $@

@@ -12,7 +12,7 @@ addpath(genpath('../../../data/preprocessing/external/bedmap2'))
 
 load hot_cold_white
 %% Model domain at mesh resolution (mr) in km:
-mr = 10
+mr =  5
 
 %establish domain size of roms mesh (South pole is at km 0,0):
 [Cx Cy] = meshgrid([-4500:mr:4500],[-4500:mr:4500]);

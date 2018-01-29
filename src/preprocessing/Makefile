@@ -14,6 +14,8 @@ tds: $(prodir)/waom10_tds.nc $(prodir)/waom5_tds.nc
 ####### individual files ########
 
 #### GRIDS ######
+# see notebook reports/0.5-kuechenrole-grid_tuning.ipynb for additional tuning steps to increase time step
+
 $(prodir)/waom5_grd.nc: $(intdir)/waom5_grd.nc grid/tune_waom5_grd.py
 	python grid/tune_waom5_grd.py
 
@@ -35,6 +37,7 @@ $(intdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc:
 
 
 ##### Initial conditions ########
+
 $(prodir)/waom10_ini.nc: $(extdir)/SALT.nc/SALT.1440x720x50.20070101.nc $(extdir)/THETA.nc/THETA.1440x720x50.20070101.nc ini/make_ini.py
 	python ini/make_ini.py
 
@@ -49,6 +52,7 @@ $(prodir)/waom10_his_0006.nc:
 
 
 ####### open boundary conditions #########
+
 $(prodir)/waom10_bry.nc: $(extdir)/ecco2/SALT.nc/SALT.1440x720x50.200701.nc $(extdir)/ecco2/THETA.nc/THETA.1440x720x50.200701.nc $(extdir)/ecco2/SSH.nc/SSH.1440x720.2007_monmean.nc lbc/make_lbc.m
 	sed -i 's/waom.*_grd.nc/waom10_grd.nc/g' lbc/make_lbc.m
 	sed -i 's/waom.*_bry.nc/waom10_bry.nc/g' lbc/make_lbc.m
@@ -68,7 +72,9 @@ $(extdir)/ecco2/SSH.nc/SSH.1440x720.2007_monmean.nc:
 
 
 ######## surface boundary conditions ###########
+
 ### sbc files ###
+
 $(prodir)/waom10_sbc.nc: $(prodir)/waom10_grd.nc $(extdir)/tamura/TSDM2hb_2007_apr.data $(extdir)/era_interim/ERA_Interim_1992_2011.2daily.uwinds.nc sbc/make_sbc.m sbc/do_ISOM_sbc_nc_daily_IAF.m sbc/ERA_interim_misom_grid_stress_annual.m
 	sed -i 's/waom.*_grd.nc/waom10_grd.nc/g' sbc/make_sbc.m
 	sed -i 's/waom.*_sbc.nc/waom10_sbc.nc/g' sbc/make_sbc.m
@@ -84,7 +90,9 @@ $(prodir)/waom5_sbc.nc: $(prodir)/waom5_grd.nc $(extdir)/tamura/TSDM2hb_2007_apr
 $(extdir)/tamura/TSDM2hb_2007_apr.data:
 $(extdir)/era_interim/ERA_Interim_1992_2011.2daily.uwinds.nc:
 
+
 #### surface nudging files ###
+
 $(prodir)/waom10_nudge.nc: $(prodir)/waom10_grd.nc $(extdir)/sose/SALT_mnthlyBar.0000000100.data sbc/make_nudge.py
 	sed -i 's/waom.*_grd.nc/waom10_grd.nc/g' sbc/make_nudge.py
 	sed -i 's/waom.*_nudge.nc/waom10_nudge.nc/g' sbc/make_nudge.py
@@ -96,6 +104,8 @@ $(prodir)/waom5_nudge.nc: $(prodir)/waom5_grd.nc $(extdir)/sose/SALT_mnthlyBar.0
 	python sbc/make_nudge.py
 
 $(extdir)/sose/SALT_mnthlyBar.0000000100.data:
+
+
 
 
 ######## tidal forcing ###########

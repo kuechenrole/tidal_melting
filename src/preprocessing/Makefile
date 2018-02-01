@@ -14,7 +14,7 @@ tds: $(prodir)/waom10_tds.nc $(prodir)/waom5_tds.nc
 ####### individual files ########
 
 #### GRIDS ######
-# see notebook reports/0.5-kuechenrole-grid_tuning.ipynb for additional tuning steps to increase time step
+# see notebook reports/2.5-kuechenrole-grid_tuning.ipynb for additional tuning steps to increase time step
 
 $(prodir)/waom5_grd.nc: $(intdir)/waom5_grd.nc grid/tune_waom5_grd.py
 	python grid/tune_waom5_grd.py

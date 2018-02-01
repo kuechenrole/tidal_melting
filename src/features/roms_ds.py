@@ -2,6 +2,8 @@
 import xarray as xr
 import numpy as np
 from .calc_z import calc_z
+from .cartesian_grid_3d import cartesian_grid_3d
+from .rotate_vector_roms import rotate_vector_roms
 
 def make_4D_mask(ds):
 
@@ -58,7 +60,92 @@ def make_4D_depth(ds):
     
     return ds
 
+def make_cartesian_grid_3D(ds):
+    
+    lon_u = ds.lon_u.values
+    lat_u = ds.lat_u.values
+    lon_v = ds.lon_v.values
+    lat_v = ds.lat_v.values
+    h = ds.h.values
+    zice = ds.zice.values
+    theta_s = ds.theta_s.values
+    theta_b = ds.theta_b.values
+    hc = ds.hc.values
+    N = ds.s_rho.size
+    
+    z = np.empty((ds.ocean_time.size,ds.s_rho.size,ds.eta_rho.size,ds.xi_rho.size))
+    dz = np.empty(np.shape(z))
+    
+    for tstep in np.arange(ds.ocean_time.size):
+        
+        zeta = ds.zeta[tstep].values
+        
+        dx,dy,dz[tstep],z[tstep] = cartesian_grid_3d(lon_u, lat_u, lon_v, lat_v, h, zice, theta_s, theta_b, hc, N, zeta)
+        
+    ds['dx'] = xr.DataArray(dx,dims=['s_rho','eta_rho','xi_rho'])
+    ds['dx'] = ds.dx.where(ds.mask_rho == 1)
+    
+    ds['dy'] = xr.DataArray(dy,dims=['s_rho','eta_rho','xi_rho'])
+    ds['dy'] = ds.dy.where(ds.mask_rho == 1)
+    
+    ds['dz'] = xr.DataArray(dz,dims=['ocean_time','s_rho','eta_rho','xi_rho'])
+    ds['dz'] = ds.dz.where(ds.mask_rho == 1)
+    
+    ds['z'] = xr.DataArray(z,dims=['ocean_time','s_rho','eta_rho','xi_rho'])
+    ds['z'] = ds.z.where(ds.mask_rho == 1)
+    
+    dV = ds.dx * ds.dy * ds.dz
+    ds['dV'] = dV
+    
+    return ds
 
+def make_uvbar_lonlat(ds):
+    
+    angle = ds.angle.values
+    
+    ubar_lonlat = np.empty((ds.ocean_time.size,ds.eta_rho.size,ds.xi_rho.size))
+    vbar_lonlat = np.empty((ds.ocean_time.size,ds.eta_rho.size,ds.xi_rho.size))
+    
+    for tstep in np.arange(ds.ocean_time.size):
+        ubar=ds.ubar[tstep].values
+        vbar=ds.vbar[tstep].values
+        
+        ubar_lonlat[tstep],vbar_lonlat[tstep] = rotate_vector_roms(ubar,vbar,angle)
+        
+    ds['ubar_lonlat'] = xr.DataArray(ubar_lonlat,dims=['ocean_time','eta_rho','xi_rho'])
+    ds['ubar_lonlat'] = ds.ubar_lonlat.where(ds.mask_rho == 1) 
+    ds.ubar_lonlat.attrs = ds.u_bar.attrs
+    
+    ds['vbar_lonlat'] = xr.DataArray(vbar_lonlat,dims=['ocean_time','eta_rho','xi_rho'])
+    ds['vbar_lonlat'] = ds.vbar_lonlat.where(ds.mask_rho == 1)
+    ds.vbar_lonlat.attrs = ds.vbar.attrs
+    
+    return ds
+
+def make_uv_lonlat(ds):
+    
+    angle = ds.angle.values
+    
+    u_lonlat = np.empty((ds.ocean_time.size,ds.s_rho.size,ds.eta_rho.size,ds.xi_rho.size))
+    v_lonlat = np.empty((ds.ocean_time.size,ds.s_rho.size,ds.eta_rho.size,ds.xi_rho.size))
+    
+    for tstep in np.arange(ds.ocean_time.size):
+        for level in np.arange(ds.s_rho.size):
+            u=ds.u[tstep,level].values
+            v=ds.v[tstep,level].values
+        
+            u_lonlat[tstep,level],v_lonlat[tstep,level] = rotate_vector_roms(u,v,angle)
+        
+    ds['u_lonlat'] = xr.DataArray(u_lonlat,dims=['ocean_time','s_rho','eta_rho','xi_rho'])
+    ds['u_lonlat'] = ds.u_lonlat.where(ds.mask_rho == 1) 
+    ds.u_lonlat.attrs = ds.u.attrs
+    
+    ds['v_lonlat'] = xr.DataArray(v_lonlat,dims=['ocean_time','s_rho','eta_rho','xi_rho'])
+    ds['v_lonlat'] = ds.v_lonlat.where(ds.mask_rho == 1)
+    ds.v_lonlat.attrs = ds.v.attrs
+    
+    return ds
+    
 
 def make_roms_ds(file_paths):
     '''Takes a roms history or averages file (wildcards are possible) and returns a Xarray dataset including 4D mask, 3D grid coordinates and 4D depths'''

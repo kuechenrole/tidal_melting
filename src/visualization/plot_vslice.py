@@ -12,7 +12,7 @@
 from netCDF4 import Dataset
 from numpy import *
 from matplotlib.pyplot import *
-from calc_z import *
+from features.calc_z import *
 
 
 def plot_vslice (file_path, variable, tstep, depth_min, depth_max, i_min, j_min, i_max, j_max, Vstretching, theta_s, theta_b, hc, N, tstop=None, vmin=None, vmax=None,title_str=None):

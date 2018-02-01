@@ -7,7 +7,7 @@ import numpy as np
 import features.mds as mds
 
 
-def make_TS_ds(sose_dir=os.path.join(os.pardir,'data','external','sose'),records=None):
+def make_TS_ds(sose_dir=os.path.join(os.environ.get('extdir'),'sose'),records=None):
     '''Reads in SothernOceanStateEstimate Temperatures and Salinities and returns them in a Xarray dataset.'''
     
     #load grid data

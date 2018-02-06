@@ -112,7 +112,7 @@ netcdf.putVar(id, swf_time_id, swft);
 
     disp('write salt and heat flux variables')
 shf = shfluxGrid; clear shfluxGrid
-swf = ssfluxGrid; clear ssfluxGrid
+swf = ssfluxGrid; clear ssfluxGrid 
 su  = u_stress; clear u_stress
 sv  = v_stress; clear v_stress
 
@@ -138,9 +138,10 @@ shf(shf > 0) = shf(shf > 0)*0.5;
 
 refSalt = 34.4; % Reference salinity
 
+    disp('write heat and freshwater flux')
 
 netcdf.putVar(id, shflux_id, permute(shf,[3 2 1]));% (W/m^2)
-netcdf.putVar(id, swflux_id, permute(-swf./refSalt*100,[3 2 1]));% kg/m^2->cm day^-1
+netcdf.putVar(id, swflux_id, permute(swf./refSalt*100,[3 2 1]));% kg/m^2->cm day^-1 AND no change of sign to swf neg = ocean freshwater gain as roms wants it this way
 %netcdf.putVar(id, ssflux_id, permute(-swf./refSalt/(60*60*24),[3 2 1])); %kg/m^2 -> m/s
     disp('Write wind variables')
 

@@ -27,8 +27,8 @@ def make_3D_XiEta(ds):
     ds = ds.assign_coords(xi_3d=xi_3d_da)
     ds = ds.assign_coords(eta_3d=eta_3d_da)
     
-    ds['xi_3d'] = ds.xi_3d.where(ds.mask_rho == 1)
-    ds['eta_3d'] = ds.eta_3d.where(ds.mask_rho ==1)
+    #ds['xi_3d'] = ds.xi_3d.where(ds.mask_rho == 1)
+    #ds['eta_3d'] = ds.eta_3d.where(ds.mask_rho ==1)
     
     ds.xi_3d.attrs = ds.xi_rho.attrs
     ds.eta_3d.attrs = ds.eta_rho.attrs
@@ -56,7 +56,7 @@ def make_4D_depth(ds):
         
     ds = ds.assign_coords(depth = xr.DataArray(depths,dims=['ocean_time','s_rho','eta_rho','xi_rho']))
     
-    ds['depth'] = ds.depth.where(ds.mask_rho == 1)
+    #ds['depth'] = ds.depth.where(ds.mask_rho == 1)
     
     return ds
 

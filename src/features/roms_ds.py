@@ -153,8 +153,8 @@ def make_roms_ds(file_paths):
     print('set up multifile dataset')
     ds_tmp = xr.open_mfdataset(file_paths,data_vars='minimal')
     
-    print('set up 4D mask and add as variable to dataset')
-    ds_tmp = make_4D_mask(ds_tmp)
+    #print('set up 4D mask and add as variable to dataset')
+    #ds_tmp = make_4D_mask(ds_tmp)
     
     print('set up 3D xi and eta arrays, fill with NaNs where invalid and apply as coordinates')
     ds_tmp = make_3D_XiEta(ds_tmp)

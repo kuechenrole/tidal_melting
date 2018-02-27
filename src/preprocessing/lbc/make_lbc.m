@@ -12,13 +12,13 @@ interim_dir = getenv('intdir');
 processed_dir = getenv('prodir');
 external_dir = getenv('extdir');
 
-grdname = [processed_dir,'/waom5_grd.nc']
+grdname = [processed_dir,'/waom2_grd.nc']
 %bryname = '/ds/projects/iomp/aisom/ana/dgwyther/grid/aisom002/aisom002_bry.nc'; %output filename.
-bryname = [processed_dir,'/waom5_bry.nc']
+bryname = [processed_dir,'/waom2_bry.nc']
 MinYear = 2007;
 MaxYear = 2007;
 ECCObounds = [1 1438 28 200];%as [xmin xmax ymin ymax]; 
-RunName = 'waom5'
+RunName = 'waom2'
 
 Vtransform = 2;
 Vstretching = 4;

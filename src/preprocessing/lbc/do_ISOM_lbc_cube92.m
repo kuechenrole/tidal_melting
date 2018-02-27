@@ -200,5 +200,5 @@ save('isfc_cube92.mat','isfc','-v7.3')
 
 DayPerYear=365;
 
-do_ISOM_lbc_nc_cube92(bryname,grdname,'Lateral Boundaries Salt and Temp',[1 1 1 1],Vtransform, Vstretching, Tcline, theta_s,theta_b,hc,N,[(DayPerYear/12/2):(DayPerYear/12):(DayPerYear*(MaxYear-MinYear+1))-(DayPerYear/12/2)],[DayPerYear*(MaxYear-MinYear+1)],'clobber')
+do_ISOM_lbc_nc_cube92(bryname,grdname,'Lateral Boundaries Salt and Temp',[1 1 1 1], Vtransform, Vstretching, Tcline, theta_s,theta_b,hc,N,[(DayPerYear/12/2):(DayPerYear/12):(DayPerYear*(MaxYear-MinYear+1))-(DayPerYear/12/2)],[DayPerYear*(MaxYear-MinYear+1)],'clobber')
 

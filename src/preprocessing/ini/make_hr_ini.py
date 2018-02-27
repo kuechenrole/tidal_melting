@@ -34,7 +34,7 @@ hr_grd = xr.open_dataset(hr_grd_path)
 lr_grd_path = os.path.join(os.environ.get("prodir"),'waom10_grd.nc')
 lr_grd = xr.open_dataset(lr_grd_path)
 
-lr_his_path =  os.path.join(os.environ.get("rawdir"),'waom10_2007','ocean_his_0006.nc')
+lr_his_path =  os.path.join(os.environ.get("rawdir"),'waom10','ocean_his_ini_0007.nc')
 lr_his = xr.open_dataset(lr_his_path).isel(ocean_time=0)
 
 lr_ini_path = os.path.join(os.environ.get("prodir"),'waom10_ini.nc')

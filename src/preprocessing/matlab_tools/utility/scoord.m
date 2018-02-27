@@ -1,10 +1,10 @@
-function [z,s,C]=scoord(h, x, y, Vtransform, Vstretching, ...
+function [z,s,C]=scoord(h, zice, x, y, Vtransform, Vstretching, ...
                         theta_s, theta_b, hc,             ...
                         N, kgrid, column, index, plt, Zzoom);
 %
 % SCOORD:  Compute and plot ROMS vertical stretched coordinates
 %
-% [z,s,C]=scoord(h, x, y, Vtransform, Vstretching, theta_s, theta_b, ...
+% [z,s,C]=scoord(h, zice, x, y, Vtransform, Vstretching, theta_s, theta_b, ...
 %                hc, N, kgrid, column, index, plt, Zzoom)
 %
 % Given a batymetry (h) and terrain-following stretching parameters,
@@ -66,7 +66,7 @@ function [z,s,C]=scoord(h, x, y, Vtransform, Vstretching, ...
 %                    C(s), 1D array, [-1 <= C(s) <= 0]
 %
 
-% svn $Id$
+% svn $Id: scoord.m 754 2015-01-07 23:23:40Z arango $
 %===========================================================================%
 %  Copyright (c) 2002-2015 The ROMS/TOMS Group                              %
 %    Licensed under a MIT/X style license                                   %
@@ -96,7 +96,7 @@ end,
 if (Vtransform < 1 | Vtransform > 2),
   disp(' ');
   disp([setstr(7),'*** Error:  SCOORD - Illegal parameter Vtransform = ' ...
-        num2str(Vtransfrom), setstr(7)]);
+        num2str(Vtransform), setstr(7)]);
   return
 end,
 
@@ -116,12 +116,12 @@ havg=0.5*(hmax+hmin);
 % Test input to see if it's in an acceptable form.
 %----------------------------------------------------------------------------
 
-if (nargin < 12),
+if (nargin < 13),
   disp(' ');
   disp([setstr(7),'*** Error:  SCOORD - too few arguments.',setstr(7)]);
   disp([setstr(7),'                     number of supplied arguments: ',...
        num2str(nargin),setstr(7)]);
-  disp([setstr(7),'                     number of required arguments: 8',...
+  disp([setstr(7),'                     number of required arguments: 9',...
        setstr(7)]);
   disp(' ');
   return
@@ -254,7 +254,7 @@ end,
 % Compute depths at requested grid section.  Assume zero free-surface.
 %============================================================================
 
-zeta=zeros(size(h));
+zeta=zeros(size(h))+zice;
 
 %----------------------------------------------------------------------------
 % Column section: section along ETA-axis.
@@ -310,7 +310,7 @@ end,
 % Plot grid section.
 %============================================================================
 
-if nargin < 13,
+if nargin < 14,
   plt = 1;
 end
 

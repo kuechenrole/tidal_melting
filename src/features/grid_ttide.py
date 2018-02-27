@@ -18,62 +18,60 @@ def NDinterp(data):
     return filled    
 
 
-def grid_ttide(ds,grid_ds,stime=datetime.datetime(2012,1,1),constit_list=['O1','M2'],res=50):
+def grid_ttide(da,grid_ds,stime=datetime.datetime(2012,1,1),constit_list=['O1','M2'],res=50):
     
     ana_list = ['amp','amp_err','phase','phase_err']
     
     print('setting up the new fields ',ana_list,' for ',constit_list)
-    dummy = np.empty((ds.eta_rho.size,ds.xi_rho.size))
+    dummy = np.empty((da.eta_rho.size,da.xi_rho.size))
     dummy[:,:] = np.nan
     
     for const in constit_list:
         for ana in ana_list:
             #print(const+'_'+ana)
-            ds[const+'_'+ana]=(('eta_rho','xi_rho'),dummy.copy())
+            grid_ds[const+'_'+ana]=(('eta_rho','xi_rho'),dummy.copy())
      
-    print("applying t_tide to every ",res,"th cell")
-    xi_values = np.linspace(0,ds.xi_rho.size-1,res,dtype=int,endpoint=True)
-    eta_values = np.linspace(0,ds.eta_rho.size-1,res,dtype=int,endpoint=True)
+    print("applying t_tide to every ",res,"th cell ..." )
+    xi_values = np.linspace(da.xi_rho[0].values,da.xi_rho.size-1,res,dtype=int,endpoint=True)
+    eta_values = np.linspace(da.eta_rho[0].values,da.eta_rho.size-1,res,dtype=int,endpoint=True)
     
     for xi in log_progress(xi_values,name='xi'):
         
         for eta in eta_values:
-            ds_sl = ds.isel(eta_rho=eta,xi_rho=xi)
+            da_sl = da.isel(eta_rho=eta,xi_rho=xi)
 
-            if ds_sl.zeta.isnull().values.any():
+            if da_sl.isnull().values.any():
                 for const in constit_list:
                     for ana in ana_list:
-                        ds[const+'_'+ana][eta,xi]=np.NaN
+                        grid_ds[const+'_'+ana][eta,xi]=np.NaN
                 
                 
             else:
-                signal = ds_sl.zeta.values
-                latitude = ds_sl.lat_rho.values
+                signal = da_sl.values
+                latitude = da_sl.lat_rho.values
                 try:
                     ttide_out = tt.t_tide(signal,stime=stime,lat=latitude,out_style=None)
-
-                    tt_ind_O1 = list(ttide_out['nameu']).index(b'O1  ')
-                    tt_ind_M2 = list(ttide_out['nameu']).index(b'M2  ')
                     
-                    tt_ind_list = [tt_ind_O1,tt_ind_M2]
-                    
-                    for const,tt_ind in zip(constit_list,tt_ind_list):
-                        for ana,tt_ana in zip(ana_list,ttide_out['tidecon'][tt_ind]):
-                            ds[const+'_'+ana][eta,xi] = tt_ana
+                    tt_ind = {}
+                    for const in constit_list:
+                        tt_ind[const] = list(ttide_out['nameu']).index(str.encode(const+'  '))
+                        
+                        for ana,tt_ana in zip(ana_list,ttide_out['tidecon'][tt_ind[const]]):
+                            grid_ds[const+'_'+ana][eta,xi] = tt_ana
 
                 except TypeError:
                     for const in constit_list:
                         for ana in ana_list:
-                            ds[const+'_'+ana][eta,xi]=np.NaN
+                            grid_ds[const+'_'+ana][eta,xi]=np.NaN
                     
     print('interpolating intermediate cells and mask land')
     for con in constit_list:
         for ana in ana_list:
-            ds[con+'_'+ana].values = NDinterp(ds[con+'_'+ana].values)
-            ds[con+'_'+ana] = ds[con+'_'+ana].where(grid_ds.mask_rho,0.0) 
+            grid_ds[con+'_'+ana].values = NDinterp(grid_ds[con+'_'+ana].values)
+            grid_ds[con+'_'+ana] = grid_ds[con+'_'+ana].where(grid_ds.mask_rho,0.0) 
       
         
-    return ds
+    return grid_ds
 
 import matplotlib.pyplot as plt
 

@@ -6,11 +6,12 @@
 # ## Preparation of ini file
 # Load high and low resolution grid, low resolution history and low resolution ini file. 
 
-# In[3]:
+# In[35]:
 
 
 # get environment variables
 import os
+import sys
 from dotenv import load_dotenv, find_dotenv
 
 # find .env automagically by walking up directories until it's found
@@ -19,13 +20,20 @@ dotenv_path = find_dotenv()
 # load up the entries as environment variables
 load_dotenv(dotenv_path)
 
+sys.path.append(os.environ.get('srcdir'))
 
-# In[4]:
+# always reload modules marked with "%aimport"
+get_ipython().run_line_magic('load_ext', 'autoreload')
+get_ipython().run_line_magic('autoreload', '1')
+
+from features.resample import low_to_high
+get_ipython().run_line_magic('aimport', 'features.resample')
+
+
+# In[36]:
 
 
 import xarray as xr
-import numpy as np
-import os
 import matplotlib.pyplot as plt
 
 hr_grd_path = os.path.join(os.environ.get("prodir"),'waom5_grd.nc')
@@ -43,134 +51,19 @@ lr_ini = xr.open_dataset(lr_ini_path)
 
 # Prepare high resolution ini file by dropping all horizontal grid dependent variables from the low resolution ini file. 
 
-# In[5]:
+# In[37]:
 
 
 hr_ini = lr_ini.drop(['u','v','ubar','vbar','salt','temp','zeta','ocean_time'])
 hr_ini
 
 
-# ## Interpolate low resolution variables on high resolution grid.
-# ### Interpolation function
-# Define function that takes low res data (as 2D or 3D data array), and high res grid and returns high resolution data array.
-
-# In[12]:
-
-
-from scipy import interpolate
-
-def low_to_high(lr_da,lr_grd,hr_grd,gt,dim,fill_value=0.0):
-    
-    print('set up empty hr data array')
-    if dim == 2:
-    
-        dummy = np.zeros(hr_grd['lon_'+gt].shape)
-        x = hr_grd['xi_'+gt]
-        y = hr_grd['eta_'+gt]
-        hr_da = xr.DataArray(dummy,coords=[y,x],dims=['eta_'+gt,'xi_'+gt])
-        
-    elif dim == 3:
-        
-        N = lr_da.s_rho.size
-        dummy = np.tile(np.zeros(hr_grd['lon_'+gt].shape),(N,1,1))
-        x = hr_grd['xi_'+gt]
-        y = hr_grd['eta_'+gt]
-        z = lr_da['s_rho']
-        hr_da = xr.DataArray(dummy,coords=[z,y,x],dims=['s_rho','eta_'+gt,'xi_'+gt])
-    
-    print('find index of shared first coordinate')
-    # Find index of bottom left corner of low res data on high res grid
-    ind = (hr_grd['x_'+gt].values == lr_grd['x_'+gt][0,0].values) & (hr_grd['y_'+gt].values == lr_grd['y_'+gt][0,0].values)
-    eta0, xi0 = np.array(np.nonzero(ind)).squeeze()
-    
-    print('Fill in the mask of lr data')
-    # Fill the mask of low resolution data with nearest neibghours and fill in known values on high res grid.
-    if dim == 2:
-        data = lr_da.values
-
-        valid_mask = ~np.isnan(data)
-        coords = np.array(np.nonzero(valid_mask)).T
-        values = data[valid_mask]
-
-        it = interpolate.NearestNDInterpolator(coords,values)
-
-        filled = it(list(np.ndindex(data.shape))).reshape(data.shape)
-        
-        # Fill in known values on high res grid
-        hr_da[eta0::2,xi0::2] = filled
-        
-    if dim == 3:
-        
-        for k in np.arange(N):
-            
-            print('processing depth level: ',k)
-            data = lr_da[k].values
-
-            valid_mask = ~np.isnan(data)
-            coords = np.array(np.nonzero(valid_mask)).T
-            values = data[valid_mask]
-
-            it = interpolate.NearestNDInterpolator(coords,values)
-
-            filled = it(list(np.ndindex(data.shape))).reshape(data.shape)
-    
-            # Fill in known values on high res grid
-            hr_da[k,eta0::2,xi0::2] = filled
-    
-    # Now interpolate the intermediate grid points using x and y coordinates (in km from center point)
-    print('interpolate at new intermediate cells on the hr grid')
-    
-    # Points we know the data
-    x = hr_grd['x_'+gt][0,xi0::2].values
-    y = hr_grd['y_'+gt][eta0::2,0].values
-    
-    # Define the target cells as meshgrid
-    grid_x,grid_y = np.meshgrid(hr_grd['x_'+gt][0,:].values,hr_grd['y_'+gt][:,0].values)
-    
-    if dim == 2:
-        # Data at these points
-        values = hr_da[eta0::2,xi0::2].to_masked_array()
-
-        # Define the interpolation function (fast regular grid interpolation)
-        interp_func = interpolate.RegularGridInterpolator((y,x),values,bounds_error=False,fill_value=None)
-
-        # Interpolate using linear interpolation
-        interp = interp_func((grid_y[:,:],grid_x[:,:]))
-
-        # Assign new data to data array
-        hr_da[:,:] = interp
-        
-        # Fill with zeros where mask is present
-        print('fill hr mask areas with fill value: ',fill_value)
-        hr_da.values[hr_grd['mask_'+gt].values == 0] = fill_value
-        
-    if dim == 3:
-        
-        for k in np.arange(N):
-            print('processing depth level: ',k)
-            # Data at these points
-            values = hr_da[k,eta0::2,xi0::2].to_masked_array()
-
-            # Define the interpolation function (fast regular grid interpolation)
-            interp_func = interpolate.RegularGridInterpolator((y,x),values,bounds_error=False,fill_value=None) 
-
-            # Interpolate using linear interpolation
-            interp = interp_func((grid_y[:,:],grid_x[:,:]))
-
-            # Assign new data to data array
-            hr_da[k,:,:] = interp
-
-            # Fill with zeros where mask is present
-            print('fill hr mask areas with fill value: ',fill_value)
-            hr_da[k].values[hr_grd['mask_'+gt].values == 0] = fill_value
-    
-    return hr_da
-
+# ## Interpolate low resolution variables on high resolution grid
 
 # ### Function call for: zeta, ubar, vbar and u, v, temp, salt 
 # Get 2D and 3D high resolution data and assign to prepared ini file.
 
-# In[13]:
+# In[38]:
 
 
 # interpolate 3D variables

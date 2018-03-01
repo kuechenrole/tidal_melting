@@ -78,3 +78,39 @@ def low_to_high(lr_da,lr_grd,hr_grd,gt,dim,fill_value=0.0):
             hr_da[k].values[hr_grd['mask_'+gt].values == 0] = fill_value
             
     return hr_da
+
+def low_to_high_frc(lr_da,lr_grd,hr_grd,gt,time_coord,fill_value=0.0):
+    
+    print('set up empty hr data array')
+        
+
+
+    N = time_coord.size
+    dummy = np.tile(np.zeros(hr_grd['lon_'+gt].shape),(N,1,1))
+    x = hr_grd['xi_'+gt]
+    y = hr_grd['eta_'+gt]
+    z = time_coord
+    hr_da = xr.DataArray(dummy,coords=[z,y,x],dims=[time_coord.name,'eta_'+gt,'xi_'+gt])
+    
+    print('Fill in the mask of lr data, resample to high resolution grid and fill hr mask with fill value: ',fill_value)
+    for k in np.arange(N):
+
+        print('processing time: ',k)
+        data = lr_da[k].values
+
+        valid_mask = ~np.isnan(data)
+        coords = np.array(np.nonzero(valid_mask)).T
+        values = data[valid_mask]
+
+        it = interpolate.NearestNDInterpolator(coords,values)
+
+        filled = it(list(np.ndindex(data.shape))).reshape(data.shape)
+
+        # Fill in known values on high res grid
+        hr_da[k] = resample(lr_grd['lon_'+gt].values,lr_grd['lat_'+gt].values,hr_grd['lon_'+gt].values,hr_grd['lat_'+gt].values,filled)
+
+        # Fill with zeros where mask is present
+
+        hr_da[k].values[hr_grd['mask_'+gt].values == 0] = fill_value
+            
+    return hr_da

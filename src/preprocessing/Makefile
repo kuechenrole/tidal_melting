@@ -17,24 +17,24 @@ tds: $(prodir)/waom10_tds.nc $(prodir)/waom5_tds.nc
 # see notebook reports/2.5-kuechenrole-grid_tuning.ipynb for additional tuning steps to increase time step
 
 
-$(prodir)/waom2_grd.nc: $(extdir)/bedmap/bedmap2.mat $(extdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc  grid/make_grid.m
-	sed -i 's/mr = ../mr =  2/g' grid/make_grid.m
-	matlab -nodesktop -nosplash -r 'run grid/make_grid; quit()'
-	mv $(intdir)/waom2_MinDepth20m_rx10.3_grd.nc $@
+$(prodir)/waom1_grd.nc: $(extdir)/bedmap/bedmap2.mat $(extdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc grid/make_grid.m
+	sed -i 's/mr = ../mr =  1/g' grid/make_grid_wrapper.m
+	matlab -nodesktop -nosplash -r 'run grid/make_grid_wrapper; quit()'
+	mv $(intdir)/waom1_MinDepth20m_rx10.3_grd.nc $@
 
 $(prodir)/waom5_grd.nc: $(intdir)/waom5_grd.nc grid/tune_waom5_grd.py
 	python grid/tune_waom5_grd.py
 
-$(intdir)/waom5_grd.nc: $(extdir)/bedmap/bedmap2.mat $(extdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc  grid/make_grid.m
-	sed -i 's/mr = ../mr =  5/g' grid/make_grid.m
-	matlab -nodesktop -nosplash -r 'run grid/make_grid; quit()'
+$(intdir)/waom5_grd.nc: $(extdir)/bedmap/bedmap2.mat $(extdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc grid/make_grid.m
+	sed -i 's/mr = ../mr =  5/g' grid/make_grid_wrapper.m
+	matlab -nodesktop -nosplash -r 'run grid/make_grid_wrapper; quit()'
 
 $(prodir)/waom10_grd.nc: $(intdir)/waom10_grd.nc grid/tune_waom10_grd.py
 	python grid/tune_waom10_grd.py
 
-$(intdir)/waom10_grd.nc: $(extdir)/bedmap/bedmap2.mat $(extdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc  grid/make_grid.m
-	sed -i 's/mr = ../mr = 10/g' grid/make_grid.m
-	matlab -nodesktop -nosplash -r 'run grid/make_grid; quit()'
+$(intdir)/waom10_grd.nc: $(extdir)/bedmap/bedmap2.mat $(extdir)/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc grid/make_grid.m
+	sed -i 's/mr = ../mr = 10/g' grid/make_grid_wrapper.m
+	matlab -nodesktop -nosplash -r 'run grid/make_grid_wrapper; quit()'
 
 
 $(extdir)/bedmap/bedmap2.mat:

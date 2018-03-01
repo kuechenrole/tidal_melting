@@ -1,18 +1,18 @@
-smooth = 0;
-PlotFigs = 0;
+%smooth = 0;
+%PlotFigs = 0;
 %addpath(genpath('/home/ubuntu/iceOceanVolume/matlab_tools'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/grid_generator/'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/WholeAntarcticModel/Preprocessing_tools/'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/ant_mf/bedmap2'))
 %addpath(genpath('/home/ubuntu/iceOceanVolume/Code/roms_matlab'))
-proj_dir = getenv('proj_dir');
-extern_dir = [proj_dir,'/data/preprocessing/external'];
-addpath(genpath('../matlab_tools/'))
-addpath(genpath('../../../data/preprocessing/external/bedmap2'))
+%proj_dir = getenv('proj_dir');
+%extern_dir = [proj_dir,'/data/preprocessing/external'];
+%addpath(genpath('../matlab_tools/'))
+%addpath(genpath('../../../data/preprocessing/external/bedmap2'))
 
 load hot_cold_white
 %% Model domain at mesh resolution (mr) in km:
-mr =  2
+%mr = 4
 
 %establish domain size of roms mesh (South pole is at km 0,0):
 [Cx Cy] = meshgrid([-4500:mr:4500],[-4500:mr:4500]);
@@ -164,7 +164,7 @@ end
 
 %% Fill up far north regions, with RTOPO (Smith and Sandwell bathymetry)
 % Use rtopo bathymetry south of 30S (subset of global 30s bedrock variable)
-RTOPO = '../../../data/preprocessing/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc'
+%RTOPO = '../../../data/preprocessing/external/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc'
 %RTOPO = [extern_dir,'/rtopo/RTopo-2.0.1_30sec_bedrock_topography_S30.nc'];
 % load lon lat and bathy from RTopo and generate lat-lon mesh for interpolation
 lon_rtopo = ncread(RTOPO,'lon');

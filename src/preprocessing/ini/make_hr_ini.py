@@ -23,11 +23,11 @@ load_dotenv(dotenv_path)
 sys.path.append(os.environ.get('srcdir'))
 
 # always reload modules marked with "%aimport"
-get_ipython().run_line_magic('load_ext', 'autoreload')
-get_ipython().run_line_magic('autoreload', '1')
+#get_ipython().run_line_magic('load_ext', 'autoreload')
+#get_ipython().run_line_magic('autoreload', '1')
 
 from features.resample import low_to_high
-get_ipython().run_line_magic('aimport', 'features.resample')
+#get_ipython().run_line_magic('aimport', 'features.resample')
 
 
 # In[36]:

@@ -11,7 +11,7 @@ sys.path.append(src_dir)
 
 from features.rotate_vector_roms import rotate_vector_roms
 
-def plot_avg_uvbar_ssh(ds,block=15):
+def plot_uv(ds,block=15):
     
     # Radius of the Earth in metres
     r = 6.371e6
@@ -22,7 +22,6 @@ def plot_avg_uvbar_ssh(ds,block=15):
 
     lon = ds.lon_rho.values
     lat = ds.lat_rho.values
-    zeta = ds.zeta.values
 
     u = ds.ubar.values
     v = ds.vbar.values
@@ -70,7 +69,7 @@ def plot_avg_uvbar_ssh(ds,block=15):
             v_block[j,i] = np.mean(v_rho[start0:end0, start1:end1])
 
     # Make the plot
-    fig,(ax0,ax1) = plt.subplots(2,figsize=(15,15))
+    fig,ax0 = plt.subplots(1,figsize=(15,10))
 
     speedP = ax0.pcolormesh(xmesh,ymesh,speed*100, vmin=0,vmax=30, cmap=cmo.speed)
     plt.colorbar(speedP,ax=ax0)
@@ -81,14 +80,5 @@ def plot_avg_uvbar_ssh(ds,block=15):
     ax0.set_title('Mean barotropic velocity (cm/s)', fontsize=16)
     ax0.set_aspect('equal')
     ax0.axis('off')
-
-    sshP = ax1.pcolormesh(zeta,vmin=-2,vmax=2,cmap=plt.cm.bwr)
-    plt.colorbar(sshP,ax=ax1)
-    ax1.set_title("Mean sea surface height [m]", fontsize=16)
-    ax1.set_aspect("equal")
-    ax1.axis("off")
-
-    plt.tight_layout()
-
 
     plt.show()

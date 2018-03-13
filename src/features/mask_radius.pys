@@ -1,0 +1,31 @@
+def rosby_mask(mask_da,mask_rho,r=10):
+    
+    neibours_add = []
+    for n_xi in np.arange(0,r+1):
+        for n_eta in np.arange(0,r+1):
+            if (n_xi**2 + n_eta**2) <= r**2:
+                neibours_add.append([n_xi,n_eta])
+                if n_xi > 0:
+                    neibours_add.append([-n_xi,n_eta])
+                if n_eta > 0:
+                    neibours_add.append([n_xi,-n_eta])
+                if n_xi > 0 and n_eta > 0:
+                    neibours_add.append([-n_xi,-n_eta])
+                    
+    mask_rho_stacked = mask_rho.stack(xieta=('xi_rho','eta_rho'))
+    
+    for xi in log_progress(mask_da.xi_rho.values,name='xi'):
+        for eta in mask_da.eta_rho.values:
+            
+            if mask_da[eta,xi] == 1:          
+                neibours = np.add(neibours_add,(xi,eta))
+                new=[]
+                for ind,neib in enumerate(neibours):
+                    if (mask_da.xi_rho[0].values <= neib[0] <= mask_da.xi_rho[-1]) and (mask_da.eta_rho[0].values <= neib[1] <= mask_da.eta_rho[-1]):
+                        new.append(tuple(neib))
+                neibours = new
+
+                if (mask_rho_stacked.sel(xieta=neibours)==0).any().values == True:
+                    mask_da[eta,xi] = 0
+                
+    return mask_da

@@ -83,11 +83,11 @@ def plot_M2O1_diff(case_ds,case_str,ref_ds,ref_str,vmin=-0.10,vmax=0.10):
     
     fig.suptitle('M2 and O1 height amplitude difference\n'+case_str+' - '+ref_str,fontsize=16)
      
-    M2_diff = case_ds.M2_amp-ref_ds.tide_Pamp[0]
-    O1_diff = case_ds.O1_amp-ref_ds.tide_Pamp[5]
+    M2_diff = case_ds.M2_amp-ref_ds.tide_Eamp[0]
+    O1_diff = case_ds.O1_amp-ref_ds.tide_Eamp[5]
     
-    M2_diff_rel = (abs(case_ds.M2_amp-ref_ds.tide_Pamp[0])/ref_ds.tide_Pamp[0])*100
-    O1_diff_rel = (abs(case_ds.O1_amp-ref_ds.tide_Pamp[5])/ref_ds.tide_Pamp[5])*100
+    M2_diff_rel = (abs(case_ds.M2_amp-ref_ds.tide_Eamp[0])/ref_ds.tide_Eamp[0])*100
+    O1_diff_rel = (abs(case_ds.O1_amp-ref_ds.tide_Eamp[5])/ref_ds.tide_Eamp[5])*100
     
     M2_diff.plot(ax=ax1,cmap=plt.cm.bwr,vmin=vmin,vmax=vmax)
     ax1.set_title('M2 ampl diff [m]')
@@ -118,7 +118,7 @@ def plot_M2O1_phase(case_ds,case_str,ref_ds,ref_str):
     ax1.set_title(case_str +' [deg]')
     ax1.axis('off')
 
-    ref_ds.tide_Pphase[0].plot(ax=ax2)
+    ref_ds.tide_Ephase[0].plot(ax=ax2)
     ax2.set_title('TPXO M2 phase in deg')
     ax2.axis('off')
     
@@ -126,7 +126,7 @@ def plot_M2O1_phase(case_ds,case_str,ref_ds,ref_str):
     ax3.set_title(case_str+' [deg]')
     ax3.axis('off')
 
-    ref_ds.tide_Pphase[5].plot(ax=ax4)
+    ref_ds.tide_Ephase[5].plot(ax=ax4)
     ax4.set_title('TPXO O1 phase in deg')
     ax4.axis('off')
 

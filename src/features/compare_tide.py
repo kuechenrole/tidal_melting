@@ -1,8 +1,10 @@
+import os
 from scipy.spatial import KDTree
 import ttide as tt
 import datetime
 import numpy as np
 import scipy.io as sio
+from features.log_progress import log_progress
 
 def read_atg(atg_data,site_id,constit_list):
 
@@ -35,14 +37,16 @@ def station_ttide(zeta_da,roms_mask_da,lat_t,lon_t,stime,constit_list):
     target = np.column_stack((lat_t,lon_t))
     dist, ind = tree.query(target)
     
+    dist=dist*10.0
+    
     tmp={}
     tmp['roms_signal'] = zeta_s[:,ind].squeeze()
     tmp['roms_ind'],tmp['dist_to ATG'] = ind,dist
     lat_r = lat_s[ind]
     lon_r = lon_s[ind]
     
-    print('atg lat(lon): %.2f,%.2f'%(lat_t,lon_t))
-    print('roms lat(lon): %.2f,%.2f'%(lat_r,lon_r))
+    #print('atg lat(lon): %.2f,%.2f'%(lat_t,lon_t))
+    #print('roms lat(lon): %.2f,%.2f'%(lat_r,lon_r))
     tmp['t_tide']=tt.t_tide(tmp['roms_signal'],dt=1,stime=stime,lat=lat_r,out_style=None)
 
 
@@ -50,7 +54,7 @@ def station_ttide(zeta_da,roms_mask_da,lat_t,lon_t,stime,constit_list):
         tide_con_ind = list(tmp['t_tide']['nameu']).index(str.encode(const+'  ')) 
         tmp[const]=tmp['t_tide']['tidecon'][tide_con_ind]
         
-    return tmp
+    return dist,tmp
 
 def rmse(predictions, targets):
     return np.sqrt(((predictions - targets) ** 2).mean())
@@ -100,20 +104,20 @@ def calc_rmse(station_dict,constit_list):
     return const_rmse 
 
 def print_station_dict(station_dict,constit_list):
-    print("Amp(amp_err)[m]:  atg      roms    ||   phase(phase_err)[deg]:  atg       roms")
+    print("Station ID || Amp(amp_err)[m]:  atg   roms || phase(phase_err)[deg]:  atg   roms || Station Name; RecLen [days]; Nearest Neibour [km]")
     for constit in constit_list:
         print(constit)
         for station_id,data in station_dict.items():  
-            print('Station ',station_id,\
-                  "      %0.2f"%data['atg'][constit][0], "  %0.2f(%0.2f)"%(data['tt'][constit][0],data['tt'][constit][1]),\
-                  "                          %0.2f"%data['atg'][constit][1], "  %0.2f(%0.2f)"%(data['tt'][constit][2],data['tt'][constit][3])) 
+            print(station_id,"|| %0.2f"%data['atg'][constit][0]," %0.2f(%0.2f) "%(data['tt'][constit][0],data['tt'][constit][1]),\
+                  "|| %0.2f"%data['atg'][constit][1]," %0.2f(%0.2f) "%(data['tt'][constit][2],data['tt'][constit][3]),\
+                  "|| ",data['atg']['name']," ",data['atg']['reclen'],' %0.2f' %data['dist'][0]) 
 
 def print_rmse(rmse_dict,constit_list):
-    print('RMSE:  amp [m]    phase [deg]   complex_amp [m]')
+    print('RMSE:  amp [m]    phase [deg]   complex[m]')
     for constit,data in rmse_dict.items():
         print(constit,'       %.2f        %.2f         %.2f '%(data['amp'],data['phase'],data['complex_amp']))
 
-def compare_tide(atg_mat_path,roms_zeta_da,roms_mask_da,stime=datetime.datetime(2007,1,1),constit_list = ['M2','O1'],station_list= [24,30]):
+def compare_tide(roms_zeta_da,roms_mask_da,atg_mat_path=os.path.join(os.environ.get('projdir'),'data','analysis','external','atg','ATG_ocean_height_2010_0908.mat'),stime=datetime.datetime(2007,1,1),constit_list = ['M2','O1'],station_list=np.arange(1,109)):
 
     print('stime = ',stime,' constits = ',constit_list,'stations = ',station_list)
     mat_content = sio.loadmat(atg_mat_path)
@@ -121,25 +125,24 @@ def compare_tide(atg_mat_path,roms_zeta_da,roms_mask_da,stime=datetime.datetime(
     
     station_dict = {}
     
-    for station in station_list:
+    for station in log_progress(station_list,name='stations'):
         
-        print('processing station ',station)
+        #print('processing station ',station)
         station_dict[station] = {}
 
         atg_dict = read_atg(atg_data,station,constit_list)
         lat = atg_dict['lat']
         lon = atg_dict['lon']
-        tt_dict = station_ttide(roms_zeta_da,roms_mask_da,lat,lon,stime,constit_list)
+        dist, tt_dict = station_ttide(roms_zeta_da,roms_mask_da,lat,lon,stime,constit_list)
 
         #print_comparison(tt_dict,atg_dict,constit_list)
         
         station_dict[station]['atg'] = atg_dict
         station_dict[station]['tt'] = tt_dict
+        station_dict[station]['dist'] = dist
         
     print_station_dict(station_dict,constit_list)
     
-   
-        
     rmse_dict = calc_rmse(station_dict,constit_list)
     
     print_rmse(rmse_dict,constit_list)

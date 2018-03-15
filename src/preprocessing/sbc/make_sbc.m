@@ -11,9 +11,9 @@ interim_dir = [proj_dir,'/data/preprocessing/interim'];
 processed_dir = [proj_dir,'/data/preprocessing/processed'];
 external_dir = [proj_dir,'/data/preprocessing/external'];
 
-grdname = [processed_dir,'/waom2_grd.nc']
-frcname = [processed_dir,'/waom2_sbc.nc']
-RunName = 'waom2'
+grdname = [processed_dir,'/waom1_grd.nc']
+frcname = [processed_dir,'/waom1_sbc.nc']
+RunName = 'waom1'
 MinYear = 2007;
 MaxYear = 2007;
 windbounds = [1 240 85 121]; %lonmin lonmax latmin latmax

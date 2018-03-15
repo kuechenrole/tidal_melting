@@ -1,0 +1,11 @@
+You compile the program, then edit the .inp file according to your
+needs. The name of the input file is set in the code. The lines in it:
+
+name of the latlon ascii file
+name of the first output file (8 constituents)
+name of the second output file (just M2)
+number of lat/lon points
+a chunk of numbers
+the names of the data files
+
+Below that, all are ignored, leftovers of other grids. 

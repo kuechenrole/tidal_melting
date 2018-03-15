@@ -1,0 +1,86 @@
+waom10_latlon.txt
+waom10_8con.dat
+waom10_m2_amph.dat
+478800
+0.298 0.603 0.01940 
+0.298 0.603 0.10128 
+0.287 0.581 0.04713 
+0.256 0.520 0.14246 
+0.302 0.609 0.04674 
+0.302 0.609 0.24408 
+0.302 0.609 0.11355 
+0.302 0.609 0.03090
+q1sal.d
+o1sal.d
+p1sal.d
+k1sal.d
+n2sal.d
+m2sal.d
+s2sal.d
+k2sal.d
+
+/archive/u1/uaf/kate/gridpak/NEP4/NEP_latlon
+NEP4_8con.dat
+NEP4_m2_amph.dat
+145092
+0.298 0.603 0.01940 
+0.298 0.603 0.10128 
+0.287 0.581 0.04713 
+0.256 0.520 0.14246 
+0.302 0.609 0.04674 
+0.302 0.609 0.24408 
+0.302 0.609 0.11355 
+0.302 0.609 0.03090
+q1sal.d
+o1sal.d
+p1sal.d
+k1sal.d
+n2sal.d
+m2sal.d
+s2sal.d
+k2sal.d
+
+../SEBS/k1_SEBS.dat
+SEBS_sal_8con.dat
+SEBS_m2_amph.dat
+70196
+0.298 0.603 0.01940 
+0.298 0.603 0.10128 
+0.287 0.581 0.04713 
+0.256 0.520 0.14246 
+0.302 0.609 0.04674 
+0.302 0.609 0.24408 
+0.302 0.609 0.11355 
+0.302 0.609 0.03090
+q1sal.d
+o1sal.d
+p1sal.d
+k1sal.d
+n2sal.d
+m2sal.d
+s2sal.d
+k2sal.d
+
+
+
+D:\mike\grids\bering1_2002_redep_reord.ngh
+bering1_eqlo_sal_8con.dat
+bering1_eqlo_m2_amph.dat
+29645
+0.298 0.603 0.01940 
+0.298 0.603 0.10128 
+0.287 0.581 0.04713 
+0.256 0.520 0.14246 
+0.302 0.609 0.04674 
+0.302 0.609 0.24408 
+0.302 0.609 0.11355 
+0.302 0.609 0.03090
+D:\mike\ray\q1sal.d
+D:\mike\ray\o1sal.d
+D:\mike\ray\p1sal.d
+D:\mike\ray\k1sal.d
+D:\mike\ray\n2sal.d
+D:\mike\ray\m2sal.d
+D:\mike\ray\s2sal.d
+D:\mike\ray\k2sal.d
+

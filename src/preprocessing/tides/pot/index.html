@@ -1,0 +1,92 @@
+	    <!-- $Id: template.m4,v 1.1 1999/08/12 15:20:24 kate Exp $ -->
+	    <html>
+	    <head>
+	    <title>Tidal potential for ROMS</title>
+	    <meta name="keywords" content="">
+	    <link REV="made"
+	    href="MAILTO:kshedstrom@alaska.edu">
+  <link rel=stylesheet href="../library/style.css" type="text/css">
+	    </head>
+<body>
+
+<H1 align=center> 
+Tidal Potential Files
+</H1>
+<p>
+These files are for generating a tidal potential file for ROMS. Note
+that the trunk ROMS won't read these fields.
+
+<p>
+The steps required:
+
+<UL>
+<LI>
+<A HREF="README">README</A>
+Some terse notes on the Fortran code.
+<LI>
+<A HREF="latlon.py">latlon.py</A>
+Python script for writing out ascii lon, lat pairs from the NetCDF
+grid file. I started with an NCL script, but then you need to edit
+out extra stuff.
+<LI>
+<A HREF="Makefile">Makefile</A>
+Makefile for the Fortran code.
+<LI>
+<A HREF="run_tidpot_load_sal.inp">run_tidpot_load_sal.inp</A>
+Input file for Fortran code - name is hardcoded.
+<LI>
+<A HREF="tidpot_load.f">tidpot_load.f</A>
+Part of Fortran code.
+<LI>
+<A HREF="tidpot_load_sal.f90">tidpot_load_sal.f90</A>
+Rest of Fortran code.
+<LI>
+<A HREF="k1sal.d">k1sal.d</A>
+One of eight data files.
+<LI>
+<A HREF="k2sal.d">k2sal.d</A>
+One of eight data files.
+<LI>
+<A HREF="m2sal.d">m2sal.d</A>
+One of eight data files.
+<LI>
+<A HREF="n2sal.d">n2sal.d</A>
+One of eight data files.
+<LI>
+<A HREF="o1sal.d">o1sal.d</A>
+One of eight data files.
+<LI>
+<A HREF="p1sal.d">p1sal.d</A>
+One of eight data files.
+<LI>
+<A HREF="q1sal.d">q1sal.d</A>
+One of eight data files.
+<LI>
+<A HREF="s2sal.d">s2sal.d</A>
+One of eight data files.
+<LI>
+<A HREF="tidepot.ncl">tidepot.ncl</A>
+NCL script to convert output of Fortran code to ROMS format.
+</UL>
+
+
+<!-- Dotted yellow rule ----------------------- --> 
+<img src="http://workkeys.rutgers.edu/images/yellow-line-595.gif" width="450" height="13" border="0"><br>
+
+<table cellpadding=0 cellspacing=0 border=0 width=510>
+
+<tr>
+<td>
+
+<!-- More information ------------ --> 
+<font FACE="Arial, Helvetica" SIZE="1"><a href="mailto:kshedstrom@alaska.edu"><i>Kate Hedstrom</i></a></font> 
+<br>
+Last changed on: 25 June 2012
+
+</td>
+
+  </tr>
+
+</table>
+</body>
+</html>

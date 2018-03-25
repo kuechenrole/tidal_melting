@@ -75,4 +75,5 @@ target/
 # matlab intermediate results
 *.mat
 
-
+# potential tides intermediate results
+*.dat

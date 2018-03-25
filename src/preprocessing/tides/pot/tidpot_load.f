@@ -13,11 +13,11 @@
 !  switch sign to get total result. See atot
 !
       dimension v0(8),nload(8)
-      dimension xlat(418000),xlon(418000),amp(8),                       &
+      dimension xlat(628000),xlon(628000),amp(8),                       &
      &          ph(8),xk(8),xh(8),hn(8),amphload(720,361,8,2),          &
      &          xlatload(720,361), xlonload(720,361),                   &
-     &          ampeq(418000,8),pheq(418000,8)
-      complex a1,a2,a3,a4,a5,a6,aint,aeq,atot(418000,8),eye
+     &          ampeq(628000,8),pheq(628000,8)
+      complex a1,a2,a3,a4,a5,a6,aint,aeq,atot(628000,8),eye
       character*80 fname
 !  The precise astronomical argument, v0, values chosen here are
 !  for 000GMT August 1, 1984. This corresponds to the approximate
@@ -91,17 +91,17 @@
 !        for the arctic grid file we must add 360 to the longitudes
 !        xlon(i)=xlon(i)+360.
 !        input longitudes must be east
-       read(7,'(a)') fname
-       do i=1,770
-         kk=542*(i-1)
-         read(7,*) (xlat(kk+j),j=1,542)
-       end do
-       read(7,'(a)') fname
-       read(7,'(a)') fname
-       do i=1,770
-         kk=542*(i-1)
-         read(7,*) (xlon(kk+j),j=1,542)
-       end do
+!       read(7,'(a)') fname
+!       do i=1,770
+!         kk=542*(i-1)
+!         read(7,*) (xlat(kk+j),j=1,542)
+!       end do
+!       read(7,'(a)') fname
+!       read(7,'(a)') fname
+!       do i=1,770
+!         kk=542*(i-1)
+!         read(7,*) (xlon(kk+j),j=1,542)
+!       end do
         close(unit=7)
 !
         do k=1,8

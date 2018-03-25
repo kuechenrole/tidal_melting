@@ -1,152 +1,27 @@
-import os
-from scipy.spatial import KDTree
-import ttide as tt
-import datetime
-import numpy as np
-import scipy.io as sio
-from features.log_progress import log_progress
+import xarray as xr
 
-def read_atg(atg_data,site_id,constit_list):
+from .grid_ttide import grid_ttide,plot_amp,plot_phase
+from .compare_atg import compare_atg,print_rmse
 
-    site_data = {}
-    for key in ['site_id','name','lat','lon','amp','Gphase','reclen','delta_t','meas_type','ref']:
-        site_data[key] =np.squeeze(atg_data[key][0,0][site_id-1])
-    site_data['constit']=np.squeeze(atg_data['constit'][0,0][:])
-    site_data['name'] = site_data['name'].strip()
+def compare_constit(case_amp,case_phase,case_str,ref_amp,ref_phase,ref_str,atg_rmse,wct,comp,constit):
+    print_rmse(atg_rmse,[case_amp.name[:2]])
+    plot_amp(case_amp,case_str,ref_amp,ref_str,comp,constit,wct)
+    plot_phase(case_phase,case_str,ref_phase,ref_str,comp,constit)
+    
+def compare_tide(zeta,rds,stime,constits,stations,res,tpxods,case_str):
 
-    cm2m = 1.0/100.0
-    for const in constit_list:
+    print('tidal analysis at atg stations ...')
+    comp,rmse = compare_atg(zeta,rds.mask_rho,stime=stime,constit_list=constits,station_list=stations,print_flag=False)
+    
+    print('tidal analysis on whole grid ...')
+    rds = grid_ttide(zeta,rds,res=res)
+    wct = rds.h+rds.zice
 
-        atg_con_ind = list(site_data['constit']).index(const)
-        site_data[const]=np.array([site_data['amp'][atg_con_ind]*cm2m, site_data['Gphase'][atg_con_ind]])
+    print('write out ATG and TPXO comparison for constituent: ')
+    for constit in constits:
         
-    return site_data
-
-def station_ttide(zeta_da,roms_mask_da,lat_t,lon_t,stime,constit_list):
-    
-    zeta_flat = zeta_da.stack(etaxi = ('eta_rho','xi_rho'))
-    mask_flat = roms_mask_da.stack(etaxi = ('eta_rho','xi_rho'))
-    
-    lat_s = zeta_flat.lat_rho.values[mask_flat.values==True]
-    lon_s = zeta_flat.lon_rho.values[mask_flat.values==True]
-    zeta_s = zeta_flat.values[:,mask_flat.values==True]
-    
-    points = np.column_stack((lat_s,lon_s))
-    tree = KDTree(points)
-    
-    target = np.column_stack((lat_t,lon_t))
-    dist, ind = tree.query(target)
-    
-    dist=dist*10.0
-    
-    tmp={}
-    tmp['roms_signal'] = zeta_s[:,ind].squeeze()
-    tmp['roms_ind'],tmp['dist_to ATG'] = ind,dist
-    lat_r = lat_s[ind]
-    lon_r = lon_s[ind]
-    
-    #print('atg lat(lon): %.2f,%.2f'%(lat_t,lon_t))
-    #print('roms lat(lon): %.2f,%.2f'%(lat_r,lon_r))
-    tmp['t_tide']=tt.t_tide(tmp['roms_signal'],dt=1,stime=stime,lat=lat_r,out_style=None)
-
-
-    for const in constit_list:
-        tide_con_ind = list(tmp['t_tide']['nameu']).index(str.encode(const+'  ')) 
-        tmp[const]=tmp['t_tide']['tidecon'][tide_con_ind]
+        ind = ['M2','S2','N2','K2','K1','O1','P1','Q1'].index(constit)
         
-    return dist,tmp
-
-def rmse(predictions, targets):
-    return np.sqrt(((predictions - targets) ** 2).mean())
-
-def complex_rmse(predictions, targets):
-    return np.sqrt(0.5*(((predictions - targets)*np.conjugate(predictions - targets)).real.mean()))
-
-def calc_rmse(station_dict,constit_list):
-    
-    const_rmse={}
-
-    for constit in constit_list:
-        
-        tt_amp_all = []
-        atg_amp_all = []
-
-        tt_phi_all =[]
-        atg_phi_all =[]
-
-        tt_z_all = []
-        atg_z_all = []
-
-        for station,data in station_dict.items():
-            
-            
-            tt_amp = data['tt'][constit][0]
-            atg_amp = data['atg'][constit][0]
-
-            tt_phi = data['tt'][constit][2]
-            atg_phi = data['atg'][constit][1]
-
-            tt_amp_all.append(tt_amp)
-            atg_amp_all.append(atg_amp)
-
-            tt_phi_all.append(tt_phi)
-            atg_phi_all.append(atg_phi)
-
-            tt_z_all.append(tt_amp * np.exp(1j*tt_phi))
-            atg_z_all.append(atg_amp * np.exp(1j*atg_phi))
-
-        const_rmse[constit] = {}
-        
-        const_rmse[constit]['amp']=rmse(np.asarray(tt_amp_all),np.asarray(atg_amp_all))
-        const_rmse[constit]['phase']=rmse(np.asarray(tt_phi_all),np.asarray(atg_phi_all))
-        const_rmse[constit]['complex_amp']=complex_rmse(np.asarray(atg_z_all),np.asarray(tt_z_all))
-        
-    return const_rmse 
-
-def print_station_dict(station_dict,constit_list):
-    print("Station ID || Amp(amp_err)[m]:  atg   roms || phase(phase_err)[deg]:  atg   roms || Station Name; RecLen [days]; Nearest Neibour [km]")
-    for constit in constit_list:
-        print(constit)
-        for station_id,data in station_dict.items():  
-            print(station_id,"|| %0.2f"%data['atg'][constit][0]," %0.2f(%0.2f) "%(data['tt'][constit][0],data['tt'][constit][1]),\
-                  "|| %0.2f"%data['atg'][constit][1]," %0.2f(%0.2f) "%(data['tt'][constit][2],data['tt'][constit][3]),\
-                  "|| ",data['atg']['name']," ",data['atg']['reclen'],' %0.2f' %data['dist'][0]) 
-
-def print_rmse(rmse_dict,constit_list):
-    print('RMSE:  amp [m]    phase [deg]   complex[m]')
-    for constit,data in rmse_dict.items():
-        print(constit,'       %.2f        %.2f         %.2f '%(data['amp'],data['phase'],data['complex_amp']))
-
-def compare_tide(roms_zeta_da,roms_mask_da,atg_mat_path=os.path.join(os.environ.get('projdir'),'data','analysis','external','atg','ATG_ocean_height_2010_0908.mat'),stime=datetime.datetime(2007,1,1),constit_list = ['M2','O1'],station_list=np.arange(1,109)):
-
-    print('stime = ',stime,' constits = ',constit_list,'stations = ',station_list)
-    mat_content = sio.loadmat(atg_mat_path)
-    atg_data = mat_content['atg']
-    
-    station_dict = {}
-    
-    for station in log_progress(station_list,name='stations'):
-        
-        #print('processing station ',station)
-        station_dict[station] = {}
-
-        atg_dict = read_atg(atg_data,station,constit_list)
-        lat = atg_dict['lat']
-        lon = atg_dict['lon']
-        dist, tt_dict = station_ttide(roms_zeta_da,roms_mask_da,lat,lon,stime,constit_list)
-
-        #print_comparison(tt_dict,atg_dict,constit_list)
-        
-        station_dict[station]['atg'] = atg_dict
-        station_dict[station]['tt'] = tt_dict
-        station_dict[station]['dist'] = dist
-        
-    print_station_dict(station_dict,constit_list)
-    
-    rmse_dict = calc_rmse(station_dict,constit_list)
-    
-    print_rmse(rmse_dict,constit_list)
-    
-    
-        
-    return station_dict,rmse_dict
+        compare_constit(rds[constit+'_amp'],rds[constit+'_phase'],case_str,
+                        tpxods.tide_Eamp[ind],tpxods.tide_Ephase[ind],'tpxo',
+                       rmse,wct,comp,constit)

@@ -3,7 +3,7 @@ import netCDF4
 import sys
 
 # Open the grid file and read lon, lat
-ncfile = '/home/ubuntu/bigStick/waom10Grids/waom10_grd_medium.nc'
+ncfile = '/home/ubuntu/bigStick/waom10Grids/waom10_grd_large.nc'
 nc = netCDF4.Dataset(ncfile, 'r', format='NETCDF3_CLASSIC')
 lon_rho = nc.variables['lon_rho'][:]
 lat_rho = nc.variables['lat_rho'][:]

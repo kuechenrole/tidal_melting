@@ -4,6 +4,7 @@ from scipy.interpolate import NearestNDInterpolator
 import xarray as xr
 import numpy as np
 from .log_progress import log_progress
+import matplotlib.pyplot as plt
 
 def NDinterp(data):
 
@@ -73,65 +74,79 @@ def grid_ttide(da,grid_ds,stime=datetime.datetime(2012,1,1),constit_list=['O1','
         
     return grid_ds
 
-import matplotlib.pyplot as plt
 
-def plot_M2O1_diff(case_ds,case_str,ref_ds,ref_str,vmin=-0.10,vmax=0.10):
+def plot_phase(case_const_da,case_str,ref_const_da,ref_str,comp,constit):
+    
+    xi = []
+    eta = []
+    #atg_phase_diff = []
+    atg_phase = []
+    
+    for key,sta in comp.items():
+        xi.append(sta['xi_rho'])
+        eta.append(sta['eta_rho'])
+        atg_phase.append(sta['atg'][constit][1])
+        #atg_phase_diff.append(sta['tt'][constit][2] - sta['atg'][constit][1])
     
     plt.close('all')
-    fig,axes = plt.subplots(ncols=2,nrows=2,figsize=(15,10))
-    ax1,ax2,ax3,ax4 = axes.flatten()
+    fig,axes = plt.subplots(ncols=2,figsize=(15,5))
+    ax1,ax2 = axes.flatten()
     
-    fig.suptitle('M2 and O1 height amplitude difference\n'+case_str+' - '+ref_str,fontsize=16)
-     
-    M2_diff = case_ds.M2_amp-ref_ds.tide_Eamp[0]
-    O1_diff = case_ds.O1_amp-ref_ds.tide_Eamp[5]
+    fig.suptitle('Evaluation of '+case_str+' '+case_const_da.name+' aginst ATG and '+ref_str,fontsize=16)
     
-    M2_diff_rel = (abs(case_ds.M2_amp-ref_ds.tide_Eamp[0])/ref_ds.tide_Eamp[0])*100
-    O1_diff_rel = (abs(case_ds.O1_amp-ref_ds.tide_Eamp[5])/ref_ds.tide_Eamp[5])*100
+    case_const_da.fillna(0).plot(ax=ax1,vmin=0,vmax=360)
+    ref_const_da.fillna(0).plot.contour(ax=ax1,levels=np.linspace(0,360,30),linestyles='dashed',alpha=0.75)
+    ax1.scatter(xi,eta,s=100,c=atg_phase,vmin=0,vmax=360,edgecolors='k')
     
-    M2_diff.plot(ax=ax1,cmap=plt.cm.bwr,vmin=vmin,vmax=vmax)
-    ax1.set_title('M2 ampl diff [m]')
+    ax1.set_title('Pcolor: '+case_str+' [deg]\n  Lines: '+ref_str+' [deg]\n Scatter: ATG [deg]')
     
-    O1_diff.plot(ax=ax2,cmap=plt.cm.bwr,vmin=vmin,vmax=vmax)
-    ax2.set_title('O1 ampl diff [m]')
+    phase_diff = case_const_da - ref_const_da
+    phase_diff_rel = abs(case_const_da - ref_const_da)/360
+    #atg_phase_diff_rel = np.absolute(atg_phase_diff)/360
     
-    M2_diff_rel.fillna(0).plot(ax=ax3,vmin=0,vmax=100)
-    ax3.set_title('M2 ampl relative diff [%]')
-    
-    O1_diff_rel.fillna(0).plot(ax=ax4,vmin=0,vmax=100)
-    ax4.set_title('O1 ampl relative diff [%]')
-    
-    
-    for ax in axes.flatten():
-        ax.axis("off")
-        ax.set_aspect('equal')
-    
-    plt.show()
-
-def plot_M2O1_phase(case_ds,case_str,ref_ds,ref_str):
-    plt.close('all')
-    fig,axes = plt.subplots(ncols=2,nrows=2,figsize=(17,8))
-    ax1,ax2,ax3,ax4 = axes.flatten()
-    fig.suptitle('Comparison of M2 and O1 height phase\n '+case_str+' vs. '+ref_str,fontsize=16)
-
-    case_ds.M2_phase.fillna(0).plot(ax=ax1)
-    ax1.set_title(case_str +' [deg]')
-    ax1.axis('off')
-
-    ref_ds.tide_Ephase[0].plot(ax=ax2)
-    ax2.set_title('TPXO M2 phase in deg')
-    ax2.axis('off')
-    
-    case_ds.O1_phase.fillna(0).plot(ax=ax3)
-    ax3.set_title(case_str+' [deg]')
-    ax3.axis('off')
-
-    ref_ds.tide_Ephase[5].plot(ax=ax4)
-    ax4.set_title('TPXO O1 phase in deg')
-    ax4.axis('off')
+    phase_diff_rel.plot(ax=ax2)
+    #ax2.scatter(xi,eta,s=100,c=atg_phase_diff_rel,vmin=0,vmax=1,edgecolors='k')
+    ax2.set_title(case_str+' - '+ref_str+' relative difference in [%]')
 
     for ax in axes.flatten():
         ax.set_aspect('equal')
         ax.axis("off")
         
+    plt.show()
+    
+
+def plot_amp(case_const_da,case_str,ref_const_da,ref_str,comp,constit,wct_da,vmin=-0.50,vmax=0.50):
+    
+    xi = []
+    eta = []
+    atg_amp_diff = []
+    
+    for key,sta in comp.items():
+        xi.append(sta['xi_rho'])
+        eta.append(sta['eta_rho'])
+        atg_amp_diff.append(sta['tt'][constit][0]-sta['atg'][constit][0])
+    
+    plt.close()
+    fig,axes = plt.subplots(ncols=2,figsize=(15,5))
+    ax1,ax2 = axes.flatten()
+    
+    fig.suptitle('Evaluation of '+case_str+' '+case_const_da.name+' aginst ATG and '+ref_str,fontsize=16)
+    
+    amp_diff = case_const_da-ref_const_da
+    
+    amp_diff_rel_norm = (abs(amp_diff)/ref_const_da*100*wct_da)/wct_da.max()
+    #atg_amp_diff_rel_norm = (np.absolute(atg_amp_diff)/ref_const_da.values*100*wct_da.values)/wct_da.max().values
+    
+    amp_diff.plot(ax=ax1,cmap=plt.cm.bwr,vmin=vmin,vmax=vmax)
+    ax1.scatter(xi,eta,s=100,c=atg_amp_diff,vmin=vmin,vmax=vmax,edgecolors='k',cmap=plt.cm.bwr)
+    ax1.set_title('Pcolor: '+case_str+' - '+ref_str+' [m]\n Scatter: '+case_str+' - ATG [m]')
+    
+    amp_diff_rel_norm.plot(ax=ax2,vmin=0,vmax=100)
+    #ax2.scatter(xi,eta,s=100,c=atg_amp_diff_rel_norm,vmin=0,vmax=100,edgecolors='k',cmap=plt.cm.bwr)
+    ax2.set_title(case_str+' - '+ref_str+' relative difference normalized by wct in [%]')
+    
+    for ax in axes.flatten():
+        #ax.axis("off")
+        ax.set_aspect('equal')
+    
     plt.show()

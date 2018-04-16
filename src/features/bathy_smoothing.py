@@ -1,4 +1,5 @@
 import numpy as np
+from .log_progress import log_progress
 # This code is adapted from the matlab code
 # "LP Bathymetry" by Mathieu Dutour Sikiric
 # http://drobilica.irb.hr/~mathieu/Bathymetry/index.html
@@ -179,8 +180,9 @@ def smoothing_PositiveVolume_rx0(MSK, Hobs, rx0max, AreaMatrix):
     tol = 0.000001
 
     while(True):
+        nbModif_tmp = 0
         IsFinished = 1
-        for iEta in range(eta_rho):
+        for iEta in log_progress(range(eta_rho),name='eta'):
             for iXi in range(xi_rho):
                 if (MSK[iEta, iXi] == 1):
                     for ineigh in range(4):
@@ -188,12 +190,13 @@ def smoothing_PositiveVolume_rx0(MSK, Hobs, rx0max, AreaMatrix):
                         iXiN = iXi + ListNeigh[ineigh,1]
                         if (iEtaN <= eta_rho-1 and iEtaN >= 0 and iXiN <= xi_rho-1 \
                                 and iXiN >= 0 and MSK[iEtaN,iXiN] == 1):
-                            LowerBound = RetBathy[iEtaN, iXiN] * (1-rx0max)/(1+rx0max)
+                            LowerBound = WorkBathy[iEtaN, iXiN] * (1-rx0max)/(1+rx0max)
                             if ((WorkBathy[iEta,iXi] - LowerBound) < -tol):
                                 IsFinished = 0
                                 WorkBathy[iEta, iXi] = LowerBound
                                 nbModif = nbModif + 1
-
+                                nbModif_tmp +=1
+        print('Points modified this round: ',nbModif_tmp)
         if (IsFinished == 1):
             break
 

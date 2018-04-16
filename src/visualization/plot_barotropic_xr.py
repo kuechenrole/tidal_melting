@@ -11,7 +11,7 @@ sys.path.append(src_dir)
 
 from features.rotate_vector_roms import rotate_vector_roms
 
-def plot_uv(ds,block=15):
+def plot_uv(ds,grd,block=15):
     
     # Radius of the Earth in metres
     r = 6.371e6
@@ -20,8 +20,8 @@ def plot_uv(ds,block=15):
     # Side length of blocks to average vectors over (can't plot vector at every
     # single point or the plot will be way too crowded)
 
-    lon = ds.lon_rho.values
-    lat = ds.lat_rho.values
+    lon = grd.lon_rho.values
+    lat = grd.lat_rho.values
 
     u = ds.ubar.values
     v = ds.vbar.values

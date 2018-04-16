@@ -55,7 +55,8 @@ if isempty(ik)==0 & km==0,
  return
 end
 if km==1,
- eval(['[xt,yt]=' Fxy_ll '(lon,lat,''F'');']);
+[xt,yt]=mapll(lat,lon,71,-70,'s');
+%eval(['[xt,yt]=' Fxy_ll '(lon,lat,''F'');']);
 else
  xt=lon;yt=lat;
 end

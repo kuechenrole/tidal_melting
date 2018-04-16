@@ -11,8 +11,8 @@ import scipy.io as sio
 
 #load roms
 print('loading data: roms grid, sose salt and theta, sose grid')
-grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom2_grd.nc')
-out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom2_nudge.nc')
+grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_small_grd.nc')
+out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_small_nudge.nc')
 sose_path = os.path.join(os.environ['projdir'],'data','preprocessing','external','sose')
 salt_path = os.path.join(sose_path,'SALT_mnthlyBar')
 theta_path = os.path.join(sose_path,'THETA_mnthlyBar')

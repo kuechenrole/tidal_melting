@@ -19,7 +19,7 @@ def NDinterp(data):
     return filled    
 
 
-def grid_ttide(da,grid_ds,stime=datetime.datetime(2012,1,1),constit_list=['O1','M2'],res=50):
+def grid_ttide(da,grid_ds,stime,constit_list,res=50):
     
     ana_list = ['amp','amp_err','phase','phase_err']
     
@@ -40,6 +40,7 @@ def grid_ttide(da,grid_ds,stime=datetime.datetime(2012,1,1),constit_list=['O1','
         
         for eta in eta_values:
             da_sl = da.isel(eta_rho=eta,xi_rho=xi)
+            grd_sl = grid_ds.isel(eta_rho=eta,xi_rho=xi)
 
             if da_sl.isnull().values.any():
                 for const in constit_list:
@@ -49,7 +50,7 @@ def grid_ttide(da,grid_ds,stime=datetime.datetime(2012,1,1),constit_list=['O1','
                 
             else:
                 signal = da_sl.values
-                latitude = da_sl.lat_rho.values
+                latitude = grd_sl.lat_rho.values
                 try:
                     ttide_out = tt.t_tide(signal,stime=stime,lat=latitude,out_style=None)
                     
@@ -101,12 +102,16 @@ def plot_phase(case_const_da,case_str,ref_const_da,ref_str,comp,constit):
     ax1.set_title('Pcolor: '+case_str+' [deg]\n  Lines: '+ref_str+' [deg]\n Scatter: ATG [deg]')
     
     phase_diff = case_const_da - ref_const_da
-    phase_diff_rel = abs(case_const_da - ref_const_da)/360
+    pdv = phase_diff.values
+    pdv[pdv>180]-=360
+    pdv[pdv<-180]+=360
+    phase_diff.values = pdv
+    #phase_diff_rel = abs(case_const_da - ref_const_da)/360
     #atg_phase_diff_rel = np.absolute(atg_phase_diff)/360
     
-    phase_diff_rel.plot(ax=ax2)
+    phase_diff.plot(ax=ax2)
     #ax2.scatter(xi,eta,s=100,c=atg_phase_diff_rel,vmin=0,vmax=1,edgecolors='k')
-    ax2.set_title(case_str+' - '+ref_str+' relative difference in [%]')
+    ax2.set_title(case_str+' - '+ref_str+' difference in deg')
 
     for ax in axes.flatten():
         ax.set_aspect('equal')
@@ -134,16 +139,17 @@ def plot_amp(case_const_da,case_str,ref_const_da,ref_str,comp,constit,wct_da,vmi
     
     amp_diff = case_const_da-ref_const_da
     
-    amp_diff_rel_norm = (abs(amp_diff)/ref_const_da*100*wct_da)/wct_da.max()
+    amp_diff_rel = abs(amp_diff)/ref_const_da*100
+    #amp_diff_rel_norm = (abs(amp_diff)/ref_const_da*100*wct_da)/wct_da.max()
     #atg_amp_diff_rel_norm = (np.absolute(atg_amp_diff)/ref_const_da.values*100*wct_da.values)/wct_da.max().values
     
     amp_diff.plot(ax=ax1,cmap=plt.cm.bwr,vmin=vmin,vmax=vmax)
     ax1.scatter(xi,eta,s=100,c=atg_amp_diff,vmin=vmin,vmax=vmax,edgecolors='k',cmap=plt.cm.bwr)
     ax1.set_title('Pcolor: '+case_str+' - '+ref_str+' [m]\n Scatter: '+case_str+' - ATG [m]')
     
-    amp_diff_rel_norm.plot(ax=ax2,vmin=0,vmax=100)
+    amp_diff_rel.plot(ax=ax2,vmin=0,vmax=100)
     #ax2.scatter(xi,eta,s=100,c=atg_amp_diff_rel_norm,vmin=0,vmax=100,edgecolors='k',cmap=plt.cm.bwr)
-    ax2.set_title(case_str+' - '+ref_str+' relative difference normalized by wct in [%]')
+    ax2.set_title(case_str+' - '+ref_str+' relative difference in [%]')
     
     for ax in axes.flatten():
         #ax.axis("off")

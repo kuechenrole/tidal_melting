@@ -22,15 +22,15 @@ def read_atg(atg_data,site_id,constit_list):
         
     return site_data
 
-def station_ttide(zeta_da,roms_mask_da,lat_t,lon_t,stime,constit_list):
+def station_ttide(zeta_da,grid,lat_t,lon_t,stime,constit_list):
     
     zeta_flat = zeta_da.stack(etaxi = ('eta_rho','xi_rho'))
-    mask_flat = roms_mask_da.stack(etaxi = ('eta_rho','xi_rho'))
+    grid_flat = grid.stack(etaxi = ('eta_rho','xi_rho'))
     
-    lat_s = zeta_flat.lat_rho.values[mask_flat.values==True]
-    lon_s = zeta_flat.lon_rho.values[mask_flat.values==True]
-    zeta_s = zeta_flat.values[:,mask_flat.values==True]
-    etaxi_s = zeta_flat.etaxi.values[mask_flat.values==True]
+    lat_s = grid_flat.lat_rho.values[grid_flat.mask_rho.values==True]
+    lon_s = grid_flat.lon_rho.values[grid_flat.mask_rho.values==True]
+    zeta_s = zeta_flat.values[:,grid_flat.mask_rho.values==True]
+    etaxi_s = zeta_flat.etaxi.values[grid_flat.mask_rho.values==True]
     
     points = np.column_stack((lat_s,lon_s))
     tree = KDTree(points)
@@ -129,7 +129,7 @@ def print_rmse(rmse_dict,constit_list):
         data = rmse_dict[constit]
         print(constit+' RMSD: amp = %.2f m    phase = %.2f deg   complex amp = %.2f m'%(data['amp'],data['phase'],data['complex_amp']))
 
-def compare_atg(roms_zeta_da,roms_mask_da,atg_mat_path=os.path.join(os.environ.get('projdir'),'data','analysis','external','atg','ATG_ocean_height_2010_0908.mat'),stime=datetime.datetime(2007,1,1),constit_list = ['M2','O1'],station_list=np.arange(1,109),print_flag=True):
+def compare_atg(roms_zeta_da,grid,atg_mat_path=os.path.join(os.environ.get('projdir'),'data','analysis','external','atg','ATG_ocean_height_2010_0908.mat'),stime=datetime.datetime(2007,1,1),constit_list = ['M2','O1'],station_list=np.arange(1,109),print_flag=True):
 
     print('stime = ',stime,' constits = ',constit_list,'stations = ',station_list)
     mat_content = sio.loadmat(atg_mat_path)
@@ -145,7 +145,7 @@ def compare_atg(roms_zeta_da,roms_mask_da,atg_mat_path=os.path.join(os.environ.g
         atg_dict = read_atg(atg_data,station,constit_list)
         lat = atg_dict['lat']
         lon = atg_dict['lon']
-        eta_rho,xi_rho,dist,tt_dict = station_ttide(roms_zeta_da,roms_mask_da,lat,lon,stime,constit_list)
+        eta_rho,xi_rho,dist,tt_dict = station_ttide(roms_zeta_da,grid,lat,lon,stime,constit_list)
 
         #print_comparison(tt_dict,atg_dict,constit_list)
         
@@ -155,9 +155,10 @@ def compare_atg(roms_zeta_da,roms_mask_da,atg_mat_path=os.path.join(os.environ.g
         station_dict[station]['eta_rho'] = eta_rho
         station_dict[station]['xi_rho'] = xi_rho
         
+
     rmse_dict = calc_rmse(station_dict,constit_list)
 
-    if print_flag:
+    if print_flag == True:
         print_station_dict(station_dict,constit_list)
         print_rmse(rmse_dict,constit_list)
         

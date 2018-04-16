@@ -274,8 +274,8 @@ vostock=array([545,325,583,347])
 roms_ini_ecco(grd_file, theta_file, salt_file, out_file, Tcline, theta_s, theta_b, hc, N, nbdry_ecco,(tempLow,tempUp),(saltLow,saltUp),vostock)
 # set user parameter and call main routine
 
-grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_grd.nc')
-out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_ini.nc')
+grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_small_grd.nc')
+out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_small_ini.nc')
 
 print('making ini file for grid file: ' + grd_file)
 

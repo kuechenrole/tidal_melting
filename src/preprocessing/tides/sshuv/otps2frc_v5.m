@@ -40,8 +40,8 @@ if ~(exist(model_file,'file'))
     error(['No Such model file: ' model_file])
 end
 
-lon=single(ncread(gfile,'lon_rho'));
-lat=single(ncread(gfile,'lat_rho'));
+lon=ncread(gfile,'lon_rho');
+lat=ncread(gfile,'lat_rho');
 
 
 disp(['Mode parameter file used: ' model_file])

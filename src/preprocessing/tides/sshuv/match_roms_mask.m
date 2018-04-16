@@ -23,7 +23,6 @@ nan_inds = find ( isnan(data) & mask==1);
 
 %
 % loop thru each point, trying to fill it in with the nearest non-nan points
-disp('tyring to fill roms points with nearest non-nan points')
 num_points = length(nan_inds);
 for j = 1:num_points
 
@@ -55,8 +54,9 @@ for j = 1:num_points
 		end
 
 		mask_thickness = mask_thickness + 1;
+        %disp(mask_thickness);
 		if ( mask_thickness > 35 )
-            %			error ( 'how can it be this bad?' );
+		%	error ( 'how can it be this bad?' );
 		end
 	end
 

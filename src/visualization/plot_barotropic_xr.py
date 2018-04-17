@@ -80,5 +80,6 @@ def plot_uv(ds,grd,block=15):
     ax0.set_title('Mean barotropic velocity (cm/s)', fontsize=16)
     ax0.set_aspect('equal')
     ax0.axis('off')
-
-    plt.show()
+  
+    print('test')
+    return fig

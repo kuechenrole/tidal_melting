@@ -5,6 +5,7 @@ import datetime
 import numpy as np
 import scipy.io as sio
 from .log_progress import log_progress
+from .haversine import haversine
 
 def read_atg(atg_data,site_id,constit_list):
 
@@ -38,7 +39,7 @@ def station_ttide(zeta_da,grid,lat_t,lon_t,stime,constit_list):
     target = np.column_stack((lat_t,lon_t))
     dist, ind = tree.query(target)
     
-    dist=dist*10.0
+    #dist=dist*10.0
     
     tmp={}
     tmp['roms_signal'] = zeta_s[:,ind].squeeze()
@@ -49,6 +50,7 @@ def station_ttide(zeta_da,grid,lat_t,lon_t,stime,constit_list):
     eta_rho,xi_rho = np.fromstring(str(etaxi_s[ind])[2:-2], sep=', ',dtype=int)
     #print('atg lat(lon): %.2f,%.2f'%(lat_t,lon_t))
     #print('roms lat(lon): %.2f,%.2f'%(lat_r,lon_r))
+    dist = haversine(lon_t,lat_t,lon_r,lat_r)
     try:
         tmp['t_tide']=tt.t_tide(tmp['roms_signal'],dt=1,stime=stime,lat=lat_r,out_style=None)
         

@@ -54,14 +54,18 @@ for j = 1:num_points
 		end
 
 		mask_thickness = mask_thickness + 1;
-        %disp(mask_thickness);
 		if ( mask_thickness > 35 )
 		%	error ( 'how can it be this bad?' );
+            break;
 		end
-	end
+    end
 
-	filled_in_data(nan_index) = my_mode(data(neighbor_inds(finite_ind)));
-	filled_in_data(nan_index) = mean(data(neighbor_inds(finite_ind)));
+    if (mask_thickness <=35 )
+	    filled_in_data(nan_index) = my_mode(data(neighbor_inds(finite_ind)));
+	%filled_in_data(nan_index) = mean(data(neighbor_inds(finite_ind)));
+    else
+        filled_in_data(nan_index) = 0.0;
+    end
 
 end
 

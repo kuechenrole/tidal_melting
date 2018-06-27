@@ -46,9 +46,11 @@ lat=ncread(gfile,'lat_rho');
 
 disp(['Mode parameter file used: ' model_file])
 
-
+disp(['Interpolating ' vars{1}])
 [z_amp,z_phase,Depth,conList]=tmd_extract_HC(model_file,lat,lon,vars{1},[]);
+disp(['Interpolating ' vars{2}])
 [u_amp,u_phase,Depth,conList]=tmd_extract_HC(model_file,lat,lon,vars{2},[]);
+disp(['Interpolating ' vars{3}])
 [v_amp,v_phase,Depth,conList]=tmd_extract_HC(model_file,lat,lon,vars{3},[]);
 
 conList
@@ -68,24 +70,26 @@ a=t_getconsts;
 %
 for j = 1:num_constituents
     
+   
+    disp(['Match roms mask for constituent: ' cnames(j,:)])
     	component = squeeze ( z_amp(j,:,: ) );
     	z_amp(j,:,:) = match_roms_mask ( lon, lat, mask_rho, component );
-    
+    disp('z_amp done')
     	component = squeeze ( z_phase(j,:,: ) );
     	z_phase(j,:,:) = match_roms_mask ( lon, lat, mask_rho, component );
-    
+    disp('z_phase done')
     	component = squeeze ( u_amp(j,:,: ) );
     	u_amp(j,:,:) = match_roms_mask ( lon, lat, mask_rho, component );
-    
+    disp('u_amp done')
     	component = squeeze ( u_phase(j,:,: ) );
     	u_phase(j,:,:) = match_roms_mask ( lon, lat, mask_rho, component );
-    
+    disp('u_phase done')
     	component = squeeze ( v_amp(j,:,: ) );
     	v_amp(j,:,:) = match_roms_mask ( lon, lat, mask_rho, component );
-    
+    disp('v_amp done')
     	component = squeeze ( v_phase(j,:,: ) );
     	v_phase(j,:,:) = match_roms_mask ( lon, lat, mask_rho, component );
-    
+    disp('v_phase done')
         iconst(j)=strmatch(cnames(j,:), a.name);
     	Tide.period(j)=1/a.freq(iconst(j));
     
@@ -117,6 +121,7 @@ datestr(base_date)
 
 %vv and uu are returned in cycles, so * by 360 to get degrees or * by 2 pi to get radians
 
+
 V=V*360;  % convert vv to phase in degrees
 U=U*360;  % convert uu to phase in degrees
 Vp=Vp*360;  % convert vv to phase in degrees
@@ -136,7 +141,6 @@ for k=1:Ntide;
 end
 %
 %
-
  
  z_phase=mod(z_phase,360);
  u_phase=mod(u_phase,360);
@@ -147,6 +151,7 @@ end
 %
  Tide.Ephase    = z_phase(:,:,:);
  Tide.Eamp      = z_amp(:,:,:);
+
 %
 %
 %
@@ -155,7 +160,16 @@ end
 % %  current ellipse parameters: Major axis, ellipticity, inclination,
 % %  and phase.  Use "tidal_ellipse" (Zhigang Xu) package.
 % %---------------------------------------------------------------------
-[major,eccentricity,inclination,phase]=ap2ep(u_amp,u_phase,v_amp,v_phase);
+major = zeros(size(u_amp));
+eccentricity = zeros(size(u_amp));
+inclination = zeros(size(u_amp));
+phase = zeros(size(u_amp));
+
+for j = 1:num_constituents;
+    disp(['Convert to tidal current ellipse parameters for constituent: ' cnames(j,:)])
+    [major(j,:,:),eccentricity(j,:,:),inclination(j,:,:),phase(j,:,:)]=ap2ep(u_amp(j,:,:),u_phase(j,:,:),v_amp(j,:,:),v_phase(j,:,:));
+end
+%[major,eccentricity,inclination,phase]=ap2ep(u_amp,u_phase,v_amp,v_phase);
 
 major = zero_out_land ( major, land );
 eccentricity = zero_out_land ( eccentricity, land );

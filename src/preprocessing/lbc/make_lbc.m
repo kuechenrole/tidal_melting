@@ -6,25 +6,25 @@
 % 2015-Dec-01:   Updated to remove a bunch of redundant features
 % 2017-Jun-21:   adapted to work on 360° whole antarctic domain
 
+run = 'waom10_bedmap'
 %addpath(genpath('/ds/projects/iomp/matlab_scripts'))
 proj_dir = getenv('projdir');
 interim_dir = getenv('intdir');
 processed_dir = getenv('prodir');
 external_dir = getenv('extdir');
-
-grdname = [processed_dir,'/waom10_small_grd.nc']
+grdname = [processed_dir,'/',run,'_grd.nc']
 %bryname = '/ds/projects/iomp/aisom/ana/dgwyther/grid/aisom002/aisom002_bry.nc'; %output filename.
-bryname = [processed_dir,'/waom10_small_bry.nc']
+bryname = [processed_dir,'/',run,'_bry.nc']
 MinYear = 2007;
 MaxYear = 2007;
 ECCObounds = [1 1438 28 200];%as [xmin xmax ymin ymax]; 
-RunName = 'waom10_small'
+RunName = run
 
 Vtransform = 2;
 Vstretching = 4;
 theta_s = 4;
 theta_b = 0.9;
-Tcline = 50;
+Tcline = 20;
 N = 31;
 
 %%%%%%%%%%%%%%%%%%%

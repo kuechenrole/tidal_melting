@@ -11,7 +11,7 @@ sys.path.append(src_dir)
 
 from features.rotate_vector_roms import rotate_vector_roms
 
-def plot_uv(ds,grd,block=15):
+def plot_uv(ds,grd,block=2):
     
     # Radius of the Earth in metres
     r = 6.371e6
@@ -71,10 +71,10 @@ def plot_uv(ds,grd,block=15):
     # Make the plot
     fig,ax0 = plt.subplots(1,figsize=(15,10))
 
-    speedP = ax0.pcolormesh(xmesh,ymesh,speed*100, vmin=0,vmax=30, cmap=cmo.speed)
+    speedP = ax0.pcolormesh(xmesh,ymesh,speed*100, vmin=0,vmax=10, cmap=cmo.speed)
     plt.colorbar(speedP,ax=ax0)
     # Add vectors for each block
-    quiverP = ax0.quiver(x_block, y_block, u_block, v_block,pivot="mid", color='black',units="width")
+    quiverP = ax0.quiver(x_block, y_block, u_block, v_block,pivot="mid", color='black',scale_units='xy',scale=0.01)
     plt.quiverkey(quiverP, 0.75, 0.99, 0.1, r'$10 \frac{cm}{s}$', labelpos='E',
                        coordinates='figure')
     ax0.set_title('Mean barotropic velocity (cm/s)', fontsize=16)

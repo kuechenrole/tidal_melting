@@ -77,3 +77,6 @@ target/
 
 # potential tides intermediate results
 *.dat
+
+# any keys
+*.pem

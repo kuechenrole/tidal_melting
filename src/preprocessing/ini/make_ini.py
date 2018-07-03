@@ -241,8 +241,8 @@ def interp_ecco2roms (A, lon_ecco, lat_ecco, depth_ecco, lon_roms_3d, lat_roms_3
 
 # set user parameter and call main routine
 
-grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_grd.nc')
-out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_ini.nc')
+grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_stable_grd.nc')
+out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_stable_ini.nc')
 
 print('making ini file for grid file: ' + grd_file)
 
@@ -251,10 +251,10 @@ salt_file = os.path.join(os.environ['projdir'],'data','preprocessing','external'
 theta_file = os.path.join(os.environ['projdir'],'data','preprocessing','external','ecco2','THETA.nc','THETA.1440x720x50.20070101.nc')
 
 # Grid parameters; check grid_file and *.in file to make sure these are correct
-Tcline = 50
-theta_s = 4.0
-theta_b = 0.9
-hc = 50
+Tcline = 250
+theta_s = 7.0
+theta_b = 8.0
+hc = 250
 N = 31
 
 # Northernmost index of ECCO2 grid to read (1-based)
@@ -268,41 +268,7 @@ saltUp = 34.8
 saltLow = 33.2
 
 # define grid bounds of lake vostock
-vostock=array([545,325,583,347])
+vostock=array([400,200,475,260])
 
 # call function that generates the out file
 roms_ini_ecco(grd_file, theta_file, salt_file, out_file, Tcline, theta_s, theta_b, hc, N, nbdry_ecco,(tempLow,tempUp),(saltLow,saltUp),vostock)
-# set user parameter and call main routine
-
-grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_small_grd.nc')
-out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_small_ini.nc')
-
-print('making ini file for grid file: ' + grd_file)
-
-# Path to ECCO2 files for temperature and salinity 1th January 1995
-salt_file = os.path.join(os.environ['projdir'],'data','preprocessing','external','ecco2','SALT.nc','SALT.1440x720x50.20070101.nc')
-theta_file = os.path.join(os.environ['projdir'],'data','preprocessing','external','ecco2','THETA.nc','THETA.1440x720x50.20070101.nc')
-
-# Grid parameters; check grid_file and *.in file to make sure these are correct
-Tcline = 50
-theta_s = 4.0
-theta_b = 0.9
-hc = 50
-N = 31
-
-# Northernmost index of ECCO2 grid to read (1-based)
-nbdry_ecco = 300
-
-# upper and lower bounds for temp and salinity
-tempUp = 10
-tempLow = -3
-
-saltUp = 34.8
-saltLow = 33.2
-
-# define grid bounds of lake vostock
-vostock=array([545,325,583,347])
-
-# call function that generates the out file
-roms_ini_ecco(grd_file, theta_file, salt_file, out_file, Tcline, theta_s, theta_b, hc, N, nbdry_ecco,(tempLow,tempUp),(saltLow,saltUp),vostock)
-

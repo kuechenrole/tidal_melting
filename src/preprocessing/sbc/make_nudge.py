@@ -9,10 +9,11 @@ sys.path.append(sose_path)
 from mds import *
 import scipy.io as sio
 
+run = 'waom2_bedmap'
 #load roms
 print('loading data: roms grid, sose salt and theta, sose grid')
-grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_small_grd.nc')
-out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed','waom10_small_nudge.nc')
+grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed',run+'_grd.nc')
+out_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed',run+'_nudge.nc')
 sose_path = os.path.join(os.environ['projdir'],'data','preprocessing','external','sose')
 salt_path = os.path.join(sose_path,'SALT_mnthlyBar')
 theta_path = os.path.join(sose_path,'THETA_mnthlyBar')
@@ -58,9 +59,9 @@ def reorder_sose(data):
     sss_sose_raw = ma.copy(data)
     sss_sose_raw = sss_sose_raw[:,:,lon_order]
     sss_sose_tmp = ma.zeros((size(sss_sose_raw,0),size(sss_sose_raw,1),size(sss_sose_raw,2)+2))
-    sss_sose_tmp[:,:,0] = sss_sose_raw[:,:,-1]-360
+    sss_sose_tmp[:,:,0] = sss_sose_raw[:,:,-1]
     sss_sose_tmp[:,:,1:-1] = sss_sose_raw
-    sss_sose_tmp[:,:,-1] = sss_sose_raw[:,:,0]+360
+    sss_sose_tmp[:,:,-1] = sss_sose_raw[:,:,0]
     sss_sose = sss_sose_tmp.copy()
     return sss_sose
 
@@ -97,7 +98,7 @@ def sose2roms(sose_data):
             
             #interpolate to roms grid
             print("interpolate to roms grid")
-            interp_func = RegularGridInterpolator((lat_sose,lon_sose),A,bounds_error=False, method="nearest",fill_value=NaN)
+            interp_func = RegularGridInterpolator((lat_sose,lon_sose),A,bounds_error=False, method="linear",fill_value=NaN)
             C = interp_func((lat_roms,lon_roms))
 
             #fill in far south region
@@ -119,7 +120,8 @@ print('set up dQdSST array and time array')
 dQdSST=np.ones(np.shape(salt_it))*-40
 dQdSST[:,zice<0.0]=0.0
 dQdSST[:,mask_rho==0]=0.0
-dQdSST[2:-2,lat_roms<=-55]=0.0
+#dQdSST[2:-2,lat_roms<=-55]=0.0
+dQdSST[2:-2]=0.0
 
 time_start = 365/12*0.5
 time_step = 365/12

@@ -6,7 +6,7 @@
 % 2015-Dec-01:   Updated to remove a bunch of redundant features
 % 2017-Jun-21:   adapted to work on 360° whole antarctic domain
 
-run = 'waom10_bedmap'
+run = 'waom2'
 %addpath(genpath('/ds/projects/iomp/matlab_scripts'))
 proj_dir = getenv('projdir');
 interim_dir = getenv('intdir');
@@ -22,9 +22,9 @@ RunName = run
 
 Vtransform = 2;
 Vstretching = 4;
-theta_s = 4;
-theta_b = 0.9;
-Tcline = 20;
+theta_s = 7;
+theta_b = 8;
+Tcline = 250;
 N = 31;
 
 %%%%%%%%%%%%%%%%%%%

@@ -1,4 +1,4 @@
-run = 'waom2_bedmap'
+run = 'waom2'
 addpath ./TMD
 addpath ./TMD/FUNCTIONS
 addpath ./t_tide_v1.3beta

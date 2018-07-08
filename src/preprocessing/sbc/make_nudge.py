@@ -9,7 +9,7 @@ sys.path.append(sose_path)
 from mds import *
 import scipy.io as sio
 
-run = 'waom2_bedmap'
+run = 'waom4'
 #load roms
 print('loading data: roms grid, sose salt and theta, sose grid')
 grd_file = os.path.join(os.environ['projdir'],'data','preprocessing','processed',run+'_grd.nc')

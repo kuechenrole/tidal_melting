@@ -113,7 +113,7 @@ toolz==0.8.2
 tornado==4.5.2
 traitlets==4.3.2
 ttide===0.3-exp
-urllib3==1.22
+urllib3==1.24.2
 wcwidth==0.1.7
 webencodings==0.5.1
 widgetsnbextension==3.1.3

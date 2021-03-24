@@ -92,7 +92,7 @@ PyYAML==3.12
 pyzmq==16.0.3
 qtconsole==4.3.1
 requests==2.18.4
-rsa==3.4.2
+rsa==4.1
 runipy==0.1.5
 s3transfer==0.1.12
 scikit-learn==0.19.1

@@ -19,7 +19,7 @@ coverage==4.4.2
 cycler==0.10.0
 dask==0.16.0
 decorator==4.1.2
-distributed==1.20.2
+distributed==2021.10.0
 docutils==0.14
 entrypoints==0.2.3
 flake8==3.5.0

@@ -53,7 +53,7 @@ MarkupSafe==1.0
 matplotlib==2.1.0
 mccabe==0.6.1
 memory-profiler==0.47
-mistune==0.8.3
+mistune==2.0.3
 msgpack-python==0.4.8
 nbconvert==5.3.1
 nbdime==0.4.0
